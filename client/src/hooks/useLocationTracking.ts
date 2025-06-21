@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { LocationData, TrackingState } from '../types/location';
-import { storageService } from '../utils/storage';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { LocationData, TrackingState } from "../types/location";
+import { storageService } from "../utils/storage";
+import { sendLocation } from "../api/location";
 
 export const useLocationTracking = () => {
   const [state, setState] = useState<TrackingState>({
@@ -17,8 +18,8 @@ export const useLocationTracking = () => {
   useEffect(() => {
     const storedHistory = storageService.getLocationHistory();
     const lastLocation = storedHistory[storedHistory.length - 1] || null;
-    
-    setState(prev => ({
+
+    setState((prev) => ({
       ...prev,
       locationHistory: storedHistory,
       currentLocation: lastLocation,
@@ -27,7 +28,7 @@ export const useLocationTracking = () => {
   }, []);
 
   const addLocationToHistory = useCallback((location: LocationData) => {
-    setState(prev => {
+    setState((prev) => {
       const newHistory = [...prev.locationHistory, location];
       storageService.saveLocationHistory(newHistory);
       return {
@@ -40,34 +41,39 @@ export const useLocationTracking = () => {
     });
   }, []);
 
-  const handleLocationSuccess = useCallback((position: GeolocationPosition) => {
-    const locationData: LocationData = {
-      id: `loc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-      accuracy: position.coords.accuracy,
-      timestamp: Date.now(),
-    };
+  const handleLocationSuccess = useCallback(
+    (position: GeolocationPosition) => {
+      const locationData: LocationData = {
+        id: `loc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        accuracy: position.coords.accuracy,
+        timestamp: Date.now(),
+      };
 
-    addLocationToHistory(locationData);
-  }, [addLocationToHistory]);
+      addLocationToHistory(locationData);
+      sendLocation(locationData);
+    },
+    [addLocationToHistory]
+  );
 
   const handleLocationError = useCallback((error: GeolocationPositionError) => {
-    let errorMessage = 'Unknown location error';
-    
+    let errorMessage = "Unknown location error";
+
     switch (error.code) {
       case error.PERMISSION_DENIED:
-        errorMessage = 'Location access denied. Please enable location permissions.';
+        errorMessage =
+          "Location access denied. Please enable location permissions.";
         break;
       case error.POSITION_UNAVAILABLE:
-        errorMessage = 'Location information unavailable.';
+        errorMessage = "Location information unavailable.";
         break;
       case error.TIMEOUT:
-        errorMessage = 'Location request timed out.';
+        errorMessage = "Location request timed out.";
         break;
     }
 
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       error: errorMessage,
       isTracking: false,
@@ -81,14 +87,14 @@ export const useLocationTracking = () => {
 
   const startTracking = useCallback(() => {
     if (!navigator.geolocation) {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
-        error: 'Geolocation is not supported by this browser.',
+        error: "Geolocation is not supported by this browser.",
       }));
       return;
     }
 
-    setState(prev => ({ ...prev, isTracking: true, error: null }));
+    setState((prev) => ({ ...prev, isTracking: true, error: null }));
 
     const options: PositionOptions = {
       enableHighAccuracy: true,
@@ -112,8 +118,8 @@ export const useLocationTracking = () => {
   }, [handleLocationSuccess, handleLocationError]);
 
   const stopTracking = useCallback(() => {
-    setState(prev => ({ ...prev, isTracking: false }));
-    
+    setState((prev) => ({ ...prev, isTracking: false }));
+
     if (watchIdRef.current) {
       navigator.geolocation.clearWatch(watchIdRef.current);
       watchIdRef.current = null;
@@ -121,7 +127,7 @@ export const useLocationTracking = () => {
   }, []);
 
   const clearHistory = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       locationHistory: [],
       currentLocation: null,
