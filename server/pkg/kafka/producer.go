@@ -11,7 +11,6 @@ type KafkaWriter struct{
 	Writer *kafka.Writer 
 }
 
-
 func CreateKafkaWriter(topic string) *KafkaWriter {
 	writer := &kafka.Writer{
 		Addr:    kafka.TCP("localhost:9092"),
@@ -20,7 +19,6 @@ func CreateKafkaWriter(topic string) *KafkaWriter {
 	}
 	return &KafkaWriter{Writer: writer}
 }
-
 
 func (w KafkaWriter ) WriteToKafka(key string ,value string) {
 	err := w.Writer.WriteMessages(context.Background(),
