@@ -1,6 +1,10 @@
 # SAFETRACE Real-Time Location Tracking System (Go + Kafka + React)
 
 Real-Time Location Tracker is a modular event-driven system that continuously tracks user locations from a frontend app, streams the data to a Go backend, and publishes it to Kafka for real-time processing. Custom Kafka consumers handle features like geo-fencing alerts, proximity detection, and location logging, making it ideal for learning Kafka, Go, and real-time architectures.
+The project is built to learn kafka.
+This is a initial version.
+I have built a simple extension for location logging.
+In the future, based on circumstances i may continue to build it.
 
 ---
 
@@ -12,7 +16,7 @@ Real-Time Location Tracker is a modular event-driven system that continuously tr
 - 🔌 Plug-and-play Kafka consumers:
   - Geo-fencing alerts
   - Meetup proximity detection
-  - Location logging to DB
+  - Location logging to file
 - 🔔 Real-time updates to frontend via WebSocket
 
 ---
@@ -28,15 +32,10 @@ Real-Time Location Tracker is a modular event-driven system that continuously tr
   ↓                         ↓                    ↓
 [GeoFence Checker]     [Meetup Matcher]     [Location Logger]
   ↓                         ↓                   ↓
-Go Fiber Events API → Notification → Frontend (WebSocket/SSE)
+Go Fiber Events API → Notification → Frontend
 ```
 
 ````
-
----
-
-## 📂 Project Structure
-
 
 ---
 
@@ -46,7 +45,7 @@ Go Fiber Events API → Notification → Frontend (WebSocket/SSE)
 
 ```bash
 git clone https://github.com/jsndz/safetrace
-cd location-tracker
+cd safetrace
 ```
 
 ### 2. 🐳 Start Kafka with Docker
@@ -67,14 +66,14 @@ go run main.go
 Each consumer can be run independently. For example:
 
 ```bash
-cd extensions/geo-fence-checker
+cd extensions/location_logger
 go run main.go
 ```
 
 ### 5. 🖥️ Run Frontend
 
 ```bash
-cd frontend
+cd client
 npm install
 npm run dev
 ```
@@ -107,7 +106,7 @@ Sends the user's location.
 | ----------------- | ----------------------------------------- |
 | Geo-Fence Checker | Sends alert if user exits allowed area    |
 | Meetup Matcher    | Triggers notification if users are nearby |
-| Location Logger   | Stores location history in DB             |
+| Location Logger   | Stores location history in file           |
 
 ---
 
@@ -129,15 +128,6 @@ Sends the user's location.
 
 ---
 
-## 📌 TODOs
-
-- [ ] Add Redis caching for latest user location
-- [ ] Add authentication to track multiple users
-- [ ] WebSocket server for real-time frontend updates
-- [ ] Frontend map UI (Leaflet.js or Google Maps)
-- [ ] Deploy backend on Railway/Fly.io
-
----
 
 ## 🧠 Learning Outcomes
 
@@ -145,6 +135,16 @@ Sends the user's location.
 - Event-driven architecture
 - Real-time geospatial data processing
 - Modular backend service design in Go
+
+---
+
+## What i learned
+
+- kafka lets you have multiple consumers
+- make the consumers scale horizontally by increasing partitions and consumers
+- Each consumer can be grouped
+- high throughput
+- rewinding option is available
 
 ---
 
@@ -162,7 +162,7 @@ Pull requests welcome. Fork the repo, create a new branch, and submit a PR.
 
 ## 🗣️ Contact
 
-Built with 💻 by [Your Name](https://github.com/your-username)
+Built with 💻 by [jsndz](https://github.com/jsndz)
 
 ----
 ````

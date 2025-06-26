@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { LocationData, TrackingState } from "../types/location";
 import { storageService } from "../utils/storage";
 import { sendLocation } from "../api/location";
+import { getOrCreateSessionID } from "../utils/sessionID";
 
 export const useLocationTracking = () => {
   const [state, setState] = useState<TrackingState>({
@@ -50,7 +51,6 @@ export const useLocationTracking = () => {
         accuracy: position.coords.accuracy,
         timestamp: Date.now(),
       };
-
       addLocationToHistory(locationData);
       sendLocation(locationData);
     },

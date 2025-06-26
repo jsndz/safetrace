@@ -19,7 +19,6 @@ func main() {
 	}))
 
 	producer := kafka.CreateKafkaWriter("location")
-	go kafka.Consume()
 	defer producer.Close()
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("SafeTrace Backend is Running")
