@@ -8,20 +8,20 @@ In the future, based on circumstances i may continue to build it.
 
 ---
 
-## 🚀 Features
+## Features
 
-- 🌍 Real-time location tracking from frontend
-- 🛡️ Backend API with Go Fiber to receive & validate data
-- 📦 Kafka integration using `segmentio/kafka-go`
-- 🔌 Plug-and-play Kafka consumers:
-  - Geo-fencing alerts
-  - Meetup proximity detection
-  - Location logging to file
-- 🔔 Real-time updates to frontend via WebSocket
+- Real-time location tracking from frontend
+- Backend API with Go Fiber to receive & validate dataQ
+- Kafka integration using `segmentio/kafka-go`
+- Plug-and-play Kafka consumers:
+- Geo-fencing alerts
+- Meetup proximity detection
+- Location logging to file
+- Real-time updates to frontend via WebSocket
 
 ---
 
-## 🧱 Architecture Overview
+## Architecture Overview
 
 ```text
                     Frontend (React/Vite)
@@ -39,29 +39,29 @@ Go Fiber Events API → Notification → Frontend
 
 ---
 
-## 🧪 Running the Project
+## Running the Project
 
-### 1. 🔃 Clone and Setup
+### 1. Clone and Setup
 
 ```bash
 git clone https://github.com/jsndz/safetrace
 cd safetrace
 ```
 
-### 2. 🐳 Start Kafka with Docker
+### 2. Start Kafka with Docker
 
 ```bash
 docker-compose up -d
 ```
 
-### 3. 🚦 Start Go Backend (Producer API)
+### 3. Start Go Backend (Producer API)
 
 ```bash
 cd cmd/server
 go run main.go
 ```
 
-### 4. 📟 Start Kafka Consumer Extensions
+### 4. Start Kafka Consumer Extensions
 
 Each consumer can be run independently. For example:
 
@@ -70,7 +70,7 @@ cd extensions/location_logger
 go run main.go
 ```
 
-### 5. 🖥️ Run Frontend
+### 5. Run Frontend
 
 ```bash
 cd client
@@ -80,7 +80,7 @@ npm run dev
 
 ---
 
-## 🌐 API Endpoint
+## API Endpoint
 
 ### `POST /location`
 
@@ -100,7 +100,7 @@ Sends the user's location.
 
 ---
 
-## 🧩 Extensions (Kafka Consumers)
+## Extensions (Kafka Consumers)
 
 | Extension         | Description                               |
 | ----------------- | ----------------------------------------- |
@@ -110,7 +110,7 @@ Sends the user's location.
 
 ---
 
-## 📦 Kafka Topics
+## Kafka Topics
 
 - `location-events` – main topic for location updates
 - `alerts` – triggered by consumers like GeoFence
@@ -118,7 +118,7 @@ Sends the user's location.
 
 ---
 
-## 🧠 Tech Stack
+## Tech Stack
 
 - **Frontend**: React + Vite
 - **Backend**: Go + Fiber + Kafka producer
@@ -129,7 +129,7 @@ Sends the user's location.
 ---
 
 
-## 🧠 Learning Outcomes
+## Learning Outcomes
 
 - Kafka producer-consumer pattern
 - Event-driven architecture
@@ -142,27 +142,20 @@ Sends the user's location.
 
 - kafka lets you have multiple consumers
 - make the consumers scale horizontally by increasing partitions and consumers
-- Each consumer can be grouped
+- Each consumer can be grouped if all consumers in a single group queue different group pub-sub
 - high throughput
 - rewinding option is available
 
 ---
 
-## 📜 License
-
-MIT
-
----
-
-## 🤝 Contributing
+## Contributing
 
 Pull requests welcome. Fork the repo, create a new branch, and submit a PR.
 
 ---
 
-## 🗣️ Contact
-
-Built with 💻 by [jsndz](https://github.com/jsndz)
+## Contact
+Built by [jsndz](https://github.com/jsndz)
 
 ----
 ````
