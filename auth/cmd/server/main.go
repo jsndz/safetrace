@@ -38,11 +38,11 @@ func main() {
 	if err!=nil {
 		fmt.Println(err)
 	}
-	app.Get("/api/auth", func(c *fiber.Ctx) error {
+	app.Get("/api/v1/auth", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
 
-	authGroup := app.Group("/api/auth")
+	authGroup := app.Group("/api/v1/auth")
 	route.SetUpRoute(authGroup, dbConn)
 	port := getEnv("PORT","3001")
 	fmt.Println("Connected:", dbConn)

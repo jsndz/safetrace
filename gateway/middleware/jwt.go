@@ -1,12 +1,14 @@
 package middleware
 
 import (
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
-var secretKey = []byte("jwtSecret")
 
 func Authenticate(c *fiber.Ctx) error {
+	secretKey := os.Getenv("jwtSecret")
 	tokenString := c.Cookies("token")
 	token ,err := jwt.Parse(tokenString,func (t *jwt.Token)(interface{},error){
 		return secretKey,nil

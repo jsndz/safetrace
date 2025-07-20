@@ -54,5 +54,5 @@ func (r *UserRepository) GetName(ID uint) (string ,error){
 	if err != nil {
 		return "", err
 	}
-	return user.Username,nil
+	return user.Name,nil
 }

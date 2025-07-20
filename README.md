@@ -21,6 +21,15 @@ In the future, based on circumstances i may continue to build it.
 
 ---
 
+## PORTS:
+
+- auth :3001
+- client:5173
+- gateway:8080
+- server:5000
+
+---
+
 ## Architecture Overview
 
 ```text
