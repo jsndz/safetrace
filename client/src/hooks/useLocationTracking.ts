@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { LocationData, TrackingState } from "../types/location";
 import { storageService } from "../utils/storage";
-import { sendLocation } from "../api/location";
-import { getOrCreateSessionID } from "../utils/sessionID";
+import { sendLocation } from "../services/location";
 
 export const useLocationTracking = () => {
   const [state, setState] = useState<TrackingState>({
@@ -15,7 +14,6 @@ export const useLocationTracking = () => {
 
   const watchIdRef = useRef<number | null>(null);
 
-  // Load initial data from storage
   useEffect(() => {
     const storedHistory = storageService.getLocationHistory();
     const lastLocation = storedHistory[storedHistory.length - 1] || null;
@@ -102,14 +100,12 @@ export const useLocationTracking = () => {
       maximumAge: 60000,
     };
 
-    // Get immediate location
     navigator.geolocation.getCurrentPosition(
       handleLocationSuccess,
       handleLocationError,
       options
     );
 
-    // Start watching for location changes
     watchIdRef.current = navigator.geolocation.watchPosition(
       handleLocationSuccess,
       handleLocationError,
@@ -136,7 +132,6 @@ export const useLocationTracking = () => {
     storageService.clearLocationHistory();
   }, []);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (watchIdRef.current) {

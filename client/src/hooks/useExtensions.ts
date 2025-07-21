@@ -1,0 +1,135 @@
+import { useState, useCallback } from "react";
+import {
+  Extension,
+  ExtensionConfig,
+  ExtensionState,
+  EXTENSION_DEFINITIONS,
+} from "../types/extensions";
+import { useAuth } from "./useAuth";
+
+export const useExtensions = () => {
+  const { user } = useAuth();
+
+  const [state, setState] = useState<ExtensionState>(() => {
+    const extensions = EXTENSION_DEFINITIONS.map((def) => ({
+      ...def,
+      enabled: false,
+      config: undefined,
+    }));
+
+    return {
+      extensions,
+      activeConfigExtension: null,
+    };
+  });
+
+  const toggleExtension = useCallback(
+    async (extensionId: string) => {
+      setState((prev) => ({
+        ...prev,
+        extensions: prev.extensions.map((ext) =>
+          ext.id === extensionId ? { ...ext, enabled: !ext.enabled } : ext
+        ),
+      }));
+
+      try {
+        const extension = state.extensions.find(
+          (ext) => ext.id === extensionId
+        );
+        const newState = !extension?.enabled;
+
+        await fetch(`/api/extensions/${extensionId}/toggle`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user?.id,
+            enabled: newState,
+          }),
+        });
+      } catch (error) {
+        console.error("Failed to toggle extension:", error);
+        setState((prev) => ({
+          ...prev,
+          extensions: prev.extensions.map((ext) =>
+            ext.id === extensionId ? { ...ext, enabled: !ext.enabled } : ext
+          ),
+        }));
+      }
+    },
+    [state.extensions, user?.id]
+  );
+
+  const openConfigModal = useCallback((extension: Extension) => {
+    setState((prev) => ({
+      ...prev,
+      activeConfigExtension: extension,
+    }));
+  }, []);
+
+  const closeConfigModal = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      activeConfigExtension: null,
+    }));
+  }, []);
+
+  const saveExtensionConfig = useCallback(
+    async (extensionId: string, config: ExtensionConfig) => {
+      try {
+        const response = await fetch(`/api/extensions/${extensionId}/config`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user?.id,
+            ...config,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to save configuration");
+        }
+
+        // Update local state
+        setState((prev) => ({
+          ...prev,
+          extensions: prev.extensions.map((ext) =>
+            ext.id === extensionId ? { ...ext, config, enabled: true } : ext
+          ),
+          activeConfigExtension: null,
+        }));
+
+        return { success: true };
+      } catch (error) {
+        console.error("Failed to save extension config:", error);
+        return { success: false, error: "Failed to save configuration" };
+      }
+    },
+    [user?.id]
+  );
+
+  const getExtensionById = useCallback(
+    (id: string) => {
+      return state.extensions.find((ext) => ext.id === id);
+    },
+    [state.extensions]
+  );
+
+  const getEnabledExtensions = useCallback(() => {
+    return state.extensions.filter((ext) => ext.enabled);
+  }, [state.extensions]);
+
+  return {
+    extensions: state.extensions,
+    activeConfigExtension: state.activeConfigExtension,
+    toggleExtension,
+    openConfigModal,
+    closeConfigModal,
+    saveExtensionConfig,
+    getExtensionById,
+    getEnabledExtensions,
+  };
+};
