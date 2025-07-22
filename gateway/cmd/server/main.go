@@ -34,7 +34,7 @@ func main() {
 	app.All("/api/v1/location/*", middleware.Authenticate, func(c *fiber.Ctx) error {
 		return proxy.Forward(c, "http://localhost:5000")
 	})
-	app.All("/api/v1//*", middleware.Authenticate, func(c *fiber.Ctx) error {
+	app.All("/api/v1/fencer/*", middleware.Authenticate, func(c *fiber.Ctx) error {
 		return proxy.Forward(c, "http://localhost:3002")
 	})
 	

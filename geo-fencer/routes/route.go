@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func FenceRoute(router gin.RouterGroup,db *gorm.DB){
+func FenceRoute(router *gin.RouterGroup,db *gorm.DB){
 	FenceHandler := handler.NewFenceHandler(db)
 
 	router.GET("/:id",FenceHandler.GetFenceByID)
