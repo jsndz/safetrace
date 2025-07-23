@@ -26,7 +26,7 @@ func main() {
 	defer consumer.Close()
 	api := router.Group("/api/v1/fencer")
 	route.FenceRoute(api,db)
-	if err := router.Run(":3000"); err != nil {
+	if err := router.Run(":3002"); err != nil {
 		log.Fatal("Failed to start HTTP server")
 	}
 }

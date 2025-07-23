@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jsndz/safetrace/geo-fencer/internal/app/model"
 	"github.com/jsndz/safetrace/geo-fencer/internal/app/service"
+	"github.com/jsndz/safetrace/geo-fencer/utils"
 	"gorm.io/gorm"
 )
 
@@ -20,38 +21,8 @@ func NewFenceHandler(db *gorm.DB) *FenceHandler {
 	}
 }
 
-func (h *FenceHandler) CreateFence(c *gin.Context) {
-	var req model.Fence
 
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"data":    nil,
-			"message": "Invalid request body",
-			"success": false,
-			"err":     err.Error(),
-		})
-		return
-	}
-
-	err := h.fenceService.CreateFence(req)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"data":    nil,
-			"message": "Couldn't create fence",
-			"success": false,
-			"err":     err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusAccepted, gin.H{
-		"data":    nil,
-		"message": "Successfully created a new fence",
-		"success": true,
-	})
-}
-
-func (h *FenceHandler) GetFenceByID(c *gin.Context) {
+func (h *FenceHandler) CreateOrUpdateFence(c *gin.Context) {
 	idParam := c.Param("id")
 	if idParam == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -73,8 +44,34 @@ func (h *FenceHandler) GetFenceByID(c *gin.Context) {
 		})
 		return
 	}
+	var req utils.FenceRequest
 
-	fence, err := h.fenceService.GetFenceByID(uint(fenceID))
+	if err= c.ShouldBindJSON(&req); err!=nil{
+		c.JSON(http.StatusBadRequest, gin.H{
+			"data":    nil,
+			"message": "Couldnt parse json",
+			"success": false,
+			"err":     err.Error(),
+		})
+	}
+	if err := utils.ValidateFenceRequest(req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"data":    nil,
+			"message": "Couldnt parse json",
+			"success": false,
+			"err":     err.Error(),
+		})
+	}
+
+	fence := model.Fence{
+		UserID:    req.UserID,
+		Latitude:  req.Latitude,
+		Longitude: req.Longitude,
+		Radius:    req.Radius,
+	}
+
+
+	res, err := h.fenceService.CreateOrUpdateFence(uint(fenceID),fence)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"data":    nil,
@@ -86,48 +83,10 @@ func (h *FenceHandler) GetFenceByID(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data":    fence,
+		"data":    res,
 		"message": "Fence fetched successfully",
 		"success": true,
 	})
 }
 
 
-func (h *FenceHandler) UpdateFence(c *gin.Context) {
-	idParam := c.Param("id")
-	fenceID, err := strconv.ParseUint(idParam, 10, 32)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid fence ID",
-			"success": false,
-			"err":     err.Error(),
-		})
-		return
-	}
-
-	var updateData model.Fence
-	if err := c.ShouldBindJSON(&updateData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid request body",
-			"success": false,
-			"err":     err.Error(),
-		})
-		return
-	}
-
-	updatedFence, err := h.fenceService.UpdateFence(uint(fenceID), updateData)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to update fence",
-			"success": false,
-			"err":     err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"data":    updatedFence,
-		"message": "Fence updated successfully",
-		"success": true,
-	})
-}

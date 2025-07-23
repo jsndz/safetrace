@@ -10,7 +10,5 @@ import (
 func FenceRoute(router *gin.RouterGroup,db *gorm.DB){
 	FenceHandler := handler.NewFenceHandler(db)
 
-	router.GET("/:id",FenceHandler.GetFenceByID)
-	router.POST("/",FenceHandler.CreateFence)
-	router.PATCH("/:id",FenceHandler.UpdateFence)
+	router.POST("/:id",FenceHandler.CreateOrUpdateFence)
 }

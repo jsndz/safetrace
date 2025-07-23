@@ -1,3 +1,5 @@
+const API_BASE = import.meta.env.VITE_API;
+
 export interface ExtensionConfig {
   [key: string]: any;
 }
@@ -11,6 +13,7 @@ export interface Extension {
   requiresConfig: boolean;
   config?: ExtensionConfig;
   configSchema?: ExtensionConfigField[];
+  link?: string;
 }
 
 export interface ExtensionConfigField {
@@ -31,7 +34,6 @@ export interface ExtensionState {
   activeConfigExtension: Extension | null;
 }
 
-// Predefined extension configurations
 export const EXTENSION_DEFINITIONS: Omit<Extension, "enabled" | "config">[] = [
   {
     id: "geo-fencer",
@@ -39,6 +41,7 @@ export const EXTENSION_DEFINITIONS: Omit<Extension, "enabled" | "config">[] = [
     description:
       "Set up virtual boundaries and get alerts when entering or leaving specific areas",
     icon: "MapPin",
+    link: `${API_BASE}/fencer`,
     requiresConfig: true,
     configSchema: [
       {

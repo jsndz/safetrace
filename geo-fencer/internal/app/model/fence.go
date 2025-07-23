@@ -5,9 +5,9 @@ import "time"
 type Fence struct {
 	ID        uint      `gorm:"primaryKey"`
 	UserID    uint      `gorm:"not null;index"`
-	Latitude  float64   `gorm:"not null"`
-	Longitude float64   `gorm:"not null"`
-	Radius    float64   `gorm:"not null"` 
+	Latitude  float64   
+	Longitude float64
+	Radius    float64   
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

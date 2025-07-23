@@ -6,6 +6,7 @@ import {
   EXTENSION_DEFINITIONS,
 } from "../types/extensions";
 import { useAuth } from "./useAuth";
+import axios from "axios";
 
 export const useExtensions = () => {
   const { user } = useAuth();
@@ -78,18 +79,27 @@ export const useExtensions = () => {
   const saveExtensionConfig = useCallback(
     async (extensionId: string, config: ExtensionConfig) => {
       try {
-        const response = await fetch(`/api/extensions/${extensionId}/config`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: user?.id,
-            ...config,
-          }),
+        // const response = await fetch(`/api/extensions/${extensionId}/config`, {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({
+        //     userId: user?.id,
+        //     ...config,
+        //   }),
+        // });
+        console.log(config);
+
+        const link = EXTENSION_DEFINITIONS.find(
+          (ex) => ex.id == extensionId
+        )?.link;
+        const response = await axios.post(link!, {
+          ...config,
+          userId: user?.id,
         });
 
-        if (!response.ok) {
+        if (!response) {
           throw new Error("Failed to save configuration");
         }
 

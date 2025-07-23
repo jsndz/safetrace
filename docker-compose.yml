@@ -28,19 +28,19 @@ services:
     volumes:
       - auth_pgdata:/var/lib/postgresql/data
     restart: unless-stopped
+  fencer-db:
+    image: postgres:15
+    container_name: fencer-db
+    ports:
+      - "5434:5434"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: safetrace
+      POSTGRES_DB: safetrace_fencer
+    volumes:
+      - fencer_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
 
 volumes:
   auth_pgdata:
-  # fencer_pgdata:
-# fencer-db:
-#     image: postgres:15
-#     container_name: fencer-db
-#     ports:
-#       - "5433:5434"
-#     environment:
-#       POSTGRES_USER: postgres
-#       POSTGRES_PASSWORD: safetrace
-#       POSTGRES_DB: safetrace.fencer
-#     volumes:
-#       - fencer_pgdata:/var/lib/postgresql/data
-#     restart: unless-stopped
+  fencer_pgdata:
