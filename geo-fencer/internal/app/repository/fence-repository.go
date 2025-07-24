@@ -14,12 +14,12 @@ func NewFenceRepository(db *gorm.DB) *FenceRepository {
 	return &FenceRepository{db: db}
 }
 
-func (r *FenceRepository) Create(fence *model.Fence) error {
+func (r *FenceRepository) Create(fence *model.Fence) (*model.Fence,error) {
 	if err := r.db.Create(fence).Error; err != nil {
 		log.Error().Err(err).Msg("Failed to create fence")
-		return err
+		return fence, err
 	}
-	return nil
+	return fence, nil
 }
 
 func (r *FenceRepository) Read(userID uint) (*model.Fence, error) {

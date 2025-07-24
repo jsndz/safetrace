@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"log"
 
 	"github.com/jsndz/safetrace/geo-fencer/internal/app/model"
 	"github.com/jsndz/safetrace/geo-fencer/internal/app/repository"
@@ -19,12 +20,19 @@ func NewFenceService (db *gorm.DB) * FenceService {
 }
 
 
-func (s *FenceService) CreateOrUpdateFence(id uint,data model.Fence) (*model.Fence, error) {
-	fence ,err:= s.fenceRepo.Read(id)
+func (s *FenceService) CreateOrUpdateFence(userid uint,data model.Fence) (*model.Fence, error) {
+	fence ,err:= s.fenceRepo.Read(userid)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		s.fenceRepo.Create(&data)
+		fence ,err= s.fenceRepo.Create(&data)
+		if err!=nil{
+			log.Fatal("Error in service")
+		}
+		return fence,err
 	} 
-	s.fenceRepo.Update(fence.ID, data)
+	fence ,err= s.fenceRepo.Update(fence.ID, data)
+	if err!=nil{
+		log.Fatal("Error in service")
+	}
 	return fence,nil
 }
 

@@ -1,0 +1,36 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Build output
+/build/
+/bin/
+/dist/
+
+# Go module cache (not needed in repo)
+/pkg/mod/
+/vendor/
+
+# IDE/editor junk
+.idea/
+.vscode/
+*.swp
+*.swo
+*.log
+*.tmp
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Env/config files (use .env.example instead)
+.env
+*.env
+
+# Dependency lock
+go.sum  

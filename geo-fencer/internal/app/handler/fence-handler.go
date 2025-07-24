@@ -34,7 +34,7 @@ func (h *FenceHandler) CreateOrUpdateFence(c *gin.Context) {
 		return
 	}
 
-	fenceID, err := strconv.ParseUint(idParam, 10, 32)
+	userID, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"data":    nil,
@@ -64,14 +64,13 @@ func (h *FenceHandler) CreateOrUpdateFence(c *gin.Context) {
 	}
 
 	fence := model.Fence{
-		UserID:    req.UserID,
 		Latitude:  req.Latitude,
 		Longitude: req.Longitude,
 		Radius:    req.Radius,
 	}
 
 
-	res, err := h.fenceService.CreateOrUpdateFence(uint(fenceID),fence)
+	res, err := h.fenceService.CreateOrUpdateFence(uint(userID),fence)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"data":    nil,
@@ -84,7 +83,7 @@ func (h *FenceHandler) CreateOrUpdateFence(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":    res,
-		"message": "Fence fetched successfully",
+		"message": "Fence worked successfully",
 		"success": true,
 	})
 }
