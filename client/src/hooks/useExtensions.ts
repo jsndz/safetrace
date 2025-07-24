@@ -32,34 +32,8 @@ export const useExtensions = () => {
           ext.id === extensionId ? { ...ext, enabled: !ext.enabled } : ext
         ),
       }));
-
-      try {
-        const extension = state.extensions.find(
-          (ext) => ext.id === extensionId
-        );
-        const newState = !extension?.enabled;
-
-        await fetch(`/api/extensions/${extensionId}/toggle`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: user?.id,
-            enabled: newState,
-          }),
-        });
-      } catch (error) {
-        console.error("Failed to toggle extension:", error);
-        setState((prev) => ({
-          ...prev,
-          extensions: prev.extensions.map((ext) =>
-            ext.id === extensionId ? { ...ext, enabled: !ext.enabled } : ext
-          ),
-        }));
-      }
     },
-    [state.extensions, user?.id]
+    [state.extensions, user?.ID]
   );
 
   const openConfigModal = useCallback((extension: Extension) => {
@@ -79,24 +53,26 @@ export const useExtensions = () => {
   const saveExtensionConfig = useCallback(
     async (extensionId: string, config: ExtensionConfig) => {
       try {
-        // const response = await fetch(`/api/extensions/${extensionId}/config`, {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify({
-        //     userId: user?.id,
-        //     ...config,
-        //   }),
-        // });
         console.log(config);
 
         const link = EXTENSION_DEFINITIONS.find(
           (ex) => ex.id == extensionId
         )?.link;
-        const response = await axios.post(`${link}/${user?.id}`, {
-          ...config,
-        });
+        console.log(user, "link:", link);
+
+        const response = await axios.post(
+          `${link}/${user?.ID}`,
+
+          config,
+
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+
+            withCredentials: true,
+          }
+        );
 
         if (!response) {
           throw new Error("Failed to save configuration");
@@ -117,7 +93,7 @@ export const useExtensions = () => {
         return { success: false, error: "Failed to save configuration" };
       }
     },
-    [user?.id]
+    [user?.ID]
   );
 
   const getExtensionById = useCallback(

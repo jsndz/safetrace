@@ -86,7 +86,6 @@ func ForwardOnly(c *fiber.Ctx, target string) error {
 		})
 		delete(responseBody, "token") 
 	}
-
 	return c.Status(resp.StatusCode).JSON(responseBody)
 }
 
@@ -95,9 +94,6 @@ func ForwardSpecific(c *fiber.Ctx, target string) (map[string]interface{},error)
 	if err != nil {
 		return nil,err
 	}
-
-	
-
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {

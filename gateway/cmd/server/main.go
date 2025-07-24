@@ -1,15 +1,21 @@
 package main
 
 import (
+	"log"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/joho/godotenv"
 	"github.com/jsndz/readit/api-gateway/middleware"
 	"github.com/jsndz/readit/api-gateway/proxy"
 )
 
 func main() {
 	app := fiber.New()
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "http://localhost:5173",
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
@@ -27,6 +33,15 @@ func main() {
 			"success": false,
 		})
 	})
+	app.Use(func(c *fiber.Ctx) error {
+		c.Request().Header.VisitAll(func(k, v []byte) {
+		  if string(k) == "Cookie" {
+			log.Printf("Request Cookie: %s", string(v))
+		  }
+		})
+		return c.Next()
+	  })
+	  
 	app.Use(logger.New())
 	app.All("/api/v1/auth/*", func(c *fiber.Ctx) error {
 		return proxy.ForwardOnly(c, "http://localhost:3001")

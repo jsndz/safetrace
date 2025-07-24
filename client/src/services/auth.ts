@@ -36,11 +36,17 @@ function logout(): void {
 
 async function signup(credentials: SignupCredentials): Promise<AuthResponse> {
   try {
-    const res = await axios.post(`${API_BASE}/auth/signup`, {
-      email: credentials.email,
-      password: credentials.password,
-      username: credentials.name,
-    });
+    const res = await axios.post(
+      `${API_BASE}/auth/signup`,
+      {
+        email: credentials.email,
+        password: credentials.password,
+        username: credentials.name,
+      },
+      {
+        withCredentials: true,
+      }
+    );
 
     const { token, data: user } = res.data;
     saveSession(user, token);
@@ -57,10 +63,16 @@ async function signup(credentials: SignupCredentials): Promise<AuthResponse> {
 
 async function login(credentials: LoginCredentials): Promise<AuthResponse> {
   try {
-    const res = await axios.post(`${API_BASE}/auth/signin`, {
-      email: credentials.email,
-      password: credentials.password,
-    });
+    const res = await axios.post(
+      `${API_BASE}/auth/signin`,
+      {
+        email: credentials.email,
+        password: credentials.password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
 
     const { token, data: user } = res.data;
     saveSession(user, token);
