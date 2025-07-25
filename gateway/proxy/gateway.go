@@ -7,33 +7,33 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 )
 
 
 func Forward(c *fiber.Ctx, target string) error{
+	log.Info("HELLO")
 		req,err:= http.NewRequest(c.Method(),target+c.OriginalURL(),bytes.NewReader(c.Body()))
 		if(err!=nil){
+			log.Infof("%v",err)
+
 			return err
 		}
 
-		c.Request().Header.VisitAll(func (key,value[]byte){
-			req.Header.Set(string(key),string(value))
-		})
-
-		userID := c.Locals("id")
-		if userID != nil {
-			req.Header.Set("X-User-ID", userID.(string))
-		}
 
 		client := http.Client{}
 		resp,err := client.Do(req)
 		if err!= nil{
+			log.Infof("%v",err)
+
 			return err
 		}
 		defer resp.Body.Close()
 
 		body, err := io.ReadAll(resp.Body)
 		if err!= nil{
+			log.Infof("%v",err)
+
 			return err
 		}
 		return c.Status(resp.StatusCode).Send(body)

@@ -24,7 +24,7 @@ func (r *FenceRepository) Create(fence *model.Fence) (*model.Fence,error) {
 
 func (r *FenceRepository) Read(userID uint) (*model.Fence, error) {
 	var fence model.Fence
-	err := r.db.Where("UserID = ?", userID).Find(&fence).Error
+	err := r.db.Where("user_id = ?", userID).Find(&fence).Error
 	if err != nil {
 		return nil, err
 	}
@@ -35,10 +35,10 @@ func (r *FenceRepository) Read(userID uint) (*model.Fence, error) {
 
 func (r *FenceRepository) Update(UserID uint, data model.Fence) (*model.Fence, error) {
 	var fence model.Fence
-	if err := r.db.Model(&fence).Where("UserID = ?", UserID).Updates(data).Error; err != nil {
+	if err := r.db.Model(&fence).Where("user_id = ?", UserID).Updates(data).Error; err != nil {
 		return nil, err
 	}
-	err := r.db.Where("UserID = ?", UserID).Find(&fence).Error
+	err := r.db.Where("user_id = ?", UserID).Find(&fence).Error
 	if err!=nil {
 		return nil,err
 	}

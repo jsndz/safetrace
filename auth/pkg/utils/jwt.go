@@ -1,14 +1,20 @@
 package utils
 
 import (
+	"os"
 	"time"
 
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var jwtSecret = []byte("jwtSecret")
 
 func GenerateJWT(email string,userId uint) (string, error) {
+	jwtSecret := os.Getenv("jwtSecret")
+	if(jwtSecret==""){
+		log.Fatal("Secert is Empty")
+	}
+	log.Infof("%s",jwtSecret)
 	claims := jwt.MapClaims{
 		"id"  : userId,
 		"email":   email,
@@ -16,5 +22,5 @@ func GenerateJWT(email string,userId uint) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(jwtSecret)
+	return token.SignedString([]byte(jwtSecret))
 }

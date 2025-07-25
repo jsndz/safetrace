@@ -16,7 +16,8 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	db,err:= db.InitDB()
+	database,err:= db.InitDB()
+	db.MigrateDB(database)
 	if err!=nil {
 		log.Println("Couldn't connect to database")
 	}
@@ -37,7 +38,7 @@ func main() {
 	consumer := kafka.NewConsumerFromEnv(topic,"geo_fencer")
 	defer consumer.Close()
 	api := router.Group("/api/v1/fencer")
-	route.FenceRoute(api,db)
+	route.FenceRoute(api,database)
 	if err := router.Run(":3002"); err != nil {
 		log.Fatal("Failed to start HTTP server")
 	}

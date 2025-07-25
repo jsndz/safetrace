@@ -46,7 +46,11 @@ export const ExtensionConfigModal: React.FC<ExtensionConfigModalProps> = ({
   if (!extension) return null;
 
   const handleInputChange = (field: ExtensionConfigField, value: any) => {
-    setConfig((prev) => ({ ...prev, [field.key]: value }));
+    let parsedValue = value;
+    if (field.type == "number") {
+      parsedValue = value === "" ? "" : Number(value);
+    }
+    setConfig((prev) => ({ ...prev, [field.key]: parsedValue }));
 
     // Clear error when user starts typing
     if (errors[field.key]) {

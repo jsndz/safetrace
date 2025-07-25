@@ -20,6 +20,8 @@ func Authenticate(c *fiber.Ctx) error {
 
 	tokenString := c.Cookies("token")
 	log.Infof("Token in cookie: %s", tokenString)
+	log.Infof("secret: %s", secretKey)
+
 	if tokenString == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Token not provided",
@@ -28,9 +30,11 @@ func Authenticate(c *fiber.Ctx) error {
 
 
 	token ,err := jwt.Parse(tokenString,func (t *jwt.Token)(interface{},error){
-		return secretKey,nil
+		return []byte(secretKey),nil
 	})
 	if err != nil || !token.Valid {
+		log.Infof("Error in token: %v", err)
+
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Invalid token",
 		})
@@ -38,5 +42,6 @@ func Authenticate(c *fiber.Ctx) error {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
 		c.Locals("id", claims["sub"])
 	}
+	log.Info("AUTHENTICATED SUCCESSFULLY")
 	return c.Next()
 }
