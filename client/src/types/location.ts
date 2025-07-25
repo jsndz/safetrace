@@ -5,6 +5,7 @@ export interface LocationData {
   accuracy?: number;
   timestamp: number;
   address?: string;
+  extensions: string[];
 }
 
 export interface TrackingState {
@@ -18,5 +19,5 @@ export interface TrackingState {
 export interface AppSettings {
   darkMode: boolean;
   autoStopMinutes: number;
-  exportFormat: 'json' | 'csv';
+  exportFormat: "json" | "csv";
 }

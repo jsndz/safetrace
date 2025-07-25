@@ -58,7 +58,6 @@ export const useExtensions = () => {
         const link = EXTENSION_DEFINITIONS.find(
           (ex) => ex.id == extensionId
         )?.link;
-        console.log(user, "link:", link);
 
         const response = await axios.post(
           `${link}/${user?.ID}`,

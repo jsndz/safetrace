@@ -14,15 +14,6 @@ import {
 
 export const HomePage: React.FC = () => {
   const {
-    isTracking,
-    currentLocation,
-    error,
-    lastUpdated,
-    startTracking,
-    stopTracking,
-  } = useLocationTracking();
-
-  const {
     extensions,
     activeConfigExtension,
     toggleExtension,
@@ -30,6 +21,17 @@ export const HomePage: React.FC = () => {
     closeConfigModal,
     saveExtensionConfig,
   } = useExtensions();
+  const enabledExtensions = extensions
+    .filter((ext) => ext.enabled)
+    .map((ex) => ex.id);
+  const {
+    isTracking,
+    currentLocation,
+    error,
+    lastUpdated,
+    startTracking,
+    stopTracking,
+  } = useLocationTracking(enabledExtensions);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 

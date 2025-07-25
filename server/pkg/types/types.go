@@ -6,6 +6,8 @@ type LocationData struct {
 	Latitude  float64  `json:"latitude"`
 	Longitude float64  `json:"longitude"`
 	Accuracy  *float64 `json:"accuracy,omitempty"`
+	Extensions []string `json:"extensions"`
 	Timestamp int64    `json:"timestamp"`
 	Address   *string  `json:"address,omitempty"`
+
 }

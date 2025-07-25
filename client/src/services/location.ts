@@ -8,9 +8,15 @@ export const sendLocation = async (data: LocationData) => {
   console.log("Sending location data to server:", data);
   const user = authService.getCurrentUser();
 
-  const res = await axios.post(`${apiUrl}/location`, {
-    ...data,
-    userId: user?.id,
-  });
+  const res = await axios.post(
+    `${apiUrl}/location`,
+    {
+      ...data,
+      userId: user?.ID,
+    },
+    {
+      withCredentials: true,
+    }
+  );
   console.log(res);
 };

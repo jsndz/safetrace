@@ -7,33 +7,40 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
-type KafkaWriter struct{
-	Writer *kafka.Writer 
+type Producer struct{
+	writer *kafka.Writer
 }
 
-func CreateKafkaWriter(topic string) *KafkaWriter {
-	writer := &kafka.Writer{
-		Addr:    kafka.TCP("localhost:9092"),
-		Topic:   topic,
-		Balancer: &kafka.LeastBytes{},
+
+
+func NewProducer(brokers []string) *Producer{
+	return &Producer{
+		&kafka.Writer{
+			Addr:     kafka.TCP(brokers...),
+			Balancer: &kafka.LeastBytes{},
+		},
 	}
-	return &KafkaWriter{Writer: writer}
+	
 }
 
-func (w KafkaWriter ) WriteToKafka(key string ,value string) {
-	err := w.Writer.WriteMessages(context.Background(),
+func(p *Producer) Publish(ctx context.Context,topic string, key ,value []byte) error{
+	err := p.writer.WriteMessages(ctx,
 		kafka.Message{
-			Key:   []byte(key),
-			Value: []byte(value),
+			Topic: topic,
+			Key:   key,
+			Value: value,
 		},
 	)
 	if err != nil {
-		log.Fatal("failed to write messages:", err)
+		log.Printf("failed to write messages: %v", err)
+		return err
 	}
+	return nil
+	
+}
+func (p *Producer) Close() error {
+	return p.writer.Close()
 }
 
-func (w *KafkaWriter) Close() {
-	if err := w.Writer.Close(); err != nil {
-		log.Println("failed to close writer:", err)
-	}
-}
+
+

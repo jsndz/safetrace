@@ -2,8 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { LocationData, TrackingState } from "../types/location";
 import { storageService } from "../utils/storage";
 import { sendLocation } from "../services/location";
-
-export const useLocationTracking = () => {
+export const useLocationTracking = (enabledExtensions: string[] = []) => {
   const [state, setState] = useState<TrackingState>({
     isTracking: false,
     currentLocation: null,
@@ -39,7 +38,6 @@ export const useLocationTracking = () => {
       };
     });
   }, []);
-
   const handleLocationSuccess = useCallback(
     (position: GeolocationPosition) => {
       const locationData: LocationData = {
@@ -48,11 +46,15 @@ export const useLocationTracking = () => {
         longitude: position.coords.longitude,
         accuracy: position.coords.accuracy,
         timestamp: Date.now(),
+        extensions: enabledExtensions,
       };
+
+      console.log(enabledExtensions);
+
       addLocationToHistory(locationData);
       sendLocation(locationData);
     },
-    [addLocationToHistory]
+    [addLocationToHistory, enabledExtensions]
   );
 
   const handleLocationError = useCallback((error: GeolocationPositionError) => {

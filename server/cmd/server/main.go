@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/jsndz/safetrace/pkg/kafka"
 	"github.com/jsndz/safetrace/pkg/types"
@@ -18,14 +20,15 @@ func main() {
 		AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
 	}))
 
-	producer := kafka.CreateKafkaWriter("location")
-	defer producer.Close()
+	producer := kafka.NewProducer([]string{"localhost:9092"})
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("SafeTrace Backend is Running")
 	})
 
 	app.Post("/api/v1/location", func(c *fiber.Ctx) error {
+		log.Info("HO")
 		var data types.LocationData
+		log.Infof("%v",string(c.Body()))
 		if err :=c.BodyParser(&data) ; err!= nil{
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"data":    nil,
@@ -44,7 +47,7 @@ func main() {
 				"err":     err.Error(),
 			})
 		}
-		producer.WriteToKafka(data.Id,string(value))
+		producer.Publish(context.Background(),"location",[]byte(data.Id),[]byte(value))
 
 		return c.JSON(fiber.Map{
 			"status":  "ok",

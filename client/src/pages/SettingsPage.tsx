@@ -67,19 +67,11 @@ export const SettingsPage: React.FC = () => {
             <div className="space-y-3">
               <div>
                 <h3 className="font-medium text-white">Name</h3>
-                <p className="text-slate-400">{user?.name}</p>
+                <p className="text-slate-400">{user?.Name}</p>
               </div>
               <div>
                 <h3 className="font-medium text-white">Email</h3>
-                <p className="text-slate-400">{user?.email}</p>
-              </div>
-              <div>
-                <h3 className="font-medium text-white">Member Since</h3>
-                <p className="text-slate-400">
-                  {user?.createdAt
-                    ? new Date(user.createdAt).toLocaleDateString()
-                    : "Unknown"}
-                </p>
+                <p className="text-slate-400">{user?.Email}</p>
               </div>
             </div>
           </div>
