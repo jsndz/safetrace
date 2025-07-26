@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/jsndz/safetrace/pkg/kafka"
 	"github.com/jsndz/safetrace/pkg/types"
@@ -26,9 +26,7 @@ func main() {
 	})
 
 	app.Post("/api/v1/location", func(c *fiber.Ctx) error {
-		log.Info("HO")
 		var data types.LocationData
-		log.Infof("%v",string(c.Body()))
 		if err :=c.BodyParser(&data) ; err!= nil{
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"data":    nil,
@@ -47,7 +45,8 @@ func main() {
 				"err":     err.Error(),
 			})
 		}
-		producer.Publish(context.Background(),"location",[]byte(data.Id),[]byte(value))
+		key :=[]byte(strconv.FormatUint(uint64(data.UserId), 10))
+		producer.Publish(context.Background(), "location", key, []byte(value))
 
 		return c.JSON(fiber.Map{
 			"status":  "ok",

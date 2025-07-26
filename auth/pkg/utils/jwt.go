@@ -14,7 +14,6 @@ func GenerateJWT(email string,userId uint) (string, error) {
 	if(jwtSecret==""){
 		log.Fatal("Secert is Empty")
 	}
-	log.Infof("%s",jwtSecret)
 	claims := jwt.MapClaims{
 		"id"  : userId,
 		"email":   email,

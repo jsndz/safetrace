@@ -1,8 +1,10 @@
 package service
 
 import (
+	"encoding/json"
 	"errors"
 	"log"
+	"math"
 
 	"github.com/jsndz/safetrace/geo-fencer/internal/app/model"
 	"github.com/jsndz/safetrace/geo-fencer/internal/app/repository"
@@ -11,6 +13,39 @@ import (
 
 type FenceService struct {
 	fenceRepo   *repository.FenceRepository
+}
+type LocationData struct {
+	Id        string   `json:"id"`
+	Latitude  float64  `json:"latitude"`
+	Longitude float64  `json:"longitude"`
+	Accuracy  *float64 `json:"accuracy,omitempty"`
+	Extensions []string `json:"extensions"`
+	Timestamp int64    `json:"timestamp"`
+	Address   *string  `json:"address,omitempty"`
+	UserId    uint     `json:"userId"`
+}
+func Haversine(lat1, lon1, lat2, lon2 float64) float64 {
+	const R = 6371000
+
+	toRad := func(deg float64) float64 {
+		return deg * math.Pi / 180
+	}
+
+	lat1Rad := toRad(lat1)
+	lon1Rad := toRad(lon1)
+	lat2Rad := toRad(lat2)
+	lon2Rad := toRad(lon2)
+
+	dLat := lat2Rad - lat1Rad
+	dLon := lon2Rad - lon1Rad
+
+	a := math.Sin(dLat/2)*math.Sin(dLat/2) +
+		math.Cos(lat1Rad)*math.Cos(lat2Rad)*
+			math.Sin(dLon/2)*math.Sin(dLon/2)
+
+	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
+
+	return R * c
 }
 
 func NewFenceService (db *gorm.DB) * FenceService {
@@ -35,6 +70,32 @@ func (s *FenceService) CreateOrUpdateFence(userid uint,data model.Fence) (*model
 	}
 	return fence,nil
 }
+func ParseLocationData(data string) (LocationData, error) {
+    var location LocationData
+    err := json.Unmarshal([]byte(data), &location)
+    if err != nil {
+        return LocationData{}, errors.New("invalid location data format")
+    }
+    return location, nil
+}
+func Fencing(userId uint,stream string,db *gorm.DB) bool{
+	var fence model.Fence
+	data, err := ParseLocationData(stream)
+	if err != nil {
+		log.Fatal("error ",err)
+	}
+	err = db.Where("user_id = ?", userId).Find(&fence).Error
+	if err != nil {
+		log.Fatal("error ",err)
+	}
+	distance := Haversine(data.Latitude, data.Longitude, fence.Latitude, fence.Longitude)
+	log.Printf("Distance from fence: %.2f meters\n", distance)
 
+	if distance <= fence.Radius {
+		log.Println("User is inside the geofence")
+	} else {
+		log.Println("User is outside the geofence")
+	}
 
-
+	return true
+}

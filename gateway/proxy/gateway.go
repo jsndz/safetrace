@@ -12,11 +12,9 @@ import (
 
 
 func Forward(c *fiber.Ctx, target string) error{
-	log.Info("HELLO")
 		req,err:= http.NewRequest(c.Method(),target+c.OriginalURL(),bytes.NewReader(c.Body()))
+		log.Infof("%v",target+c.OriginalURL())
 		if(err!=nil){
-			log.Infof("%v",err)
-
 			return err
 		}
 
@@ -26,21 +24,16 @@ func Forward(c *fiber.Ctx, target string) error{
 		client := http.Client{}
 		resp,err := client.Do(req)
 		if err!= nil{
-			log.Infof("%v",err)
-
 			return err
 		}
 		defer resp.Body.Close()
 
 		body, err := io.ReadAll(resp.Body)
 		if err!= nil{
-			log.Infof("%v",err)
 
 			return err
 		}
-		log.Infof("%v",string(body))
-		return c.Status(resp.StatusCode).Send(body)
-	
+		return c.Status(resp.StatusCode).Send(body)	
 }
 
 

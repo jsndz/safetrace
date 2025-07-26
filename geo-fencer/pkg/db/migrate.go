@@ -10,5 +10,5 @@ import (
 func MigrateDB(db *gorm.DB) {
 	db.AutoMigrate(&model.Fence{}) 
 
-	log.Println("Seed data (10 posts and comments) inserted successfully")
+	log.Println(" Sucessful migration")
 }

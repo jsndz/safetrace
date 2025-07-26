@@ -24,7 +24,7 @@ func getEnv(key, fallback string) string {
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Println("No .env file found (probably running inside Docker)")
+		log.Println("No .env file found ")
 	}
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{

@@ -65,7 +65,6 @@ func NewConsumerAvien(topic, groupID string) *Consumer {
 }
 
 
-
 func NewConsumerFromEnv(topic,groupID string) *Consumer {
 	state := utils.GetEnv("STATE")
 	

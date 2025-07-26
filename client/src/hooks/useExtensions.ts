@@ -61,14 +61,8 @@ export const useExtensions = () => {
 
         const response = await axios.post(
           `${link}/${user?.ID}`,
-
           config,
-
           {
-            headers: {
-              "Content-Type": "application/json",
-            },
-
             withCredentials: true,
           }
         );

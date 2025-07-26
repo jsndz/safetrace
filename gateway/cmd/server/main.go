@@ -33,14 +33,6 @@ func main() {
 			"success": false,
 		})
 	})
-	app.Use(func(c *fiber.Ctx) error {
-		c.Request().Header.VisitAll(func(k, v []byte) {
-		  if string(k) == "Cookie" {
-			log.Printf("Request Cookie: %s", string(v))
-		  }
-		})
-		return c.Next()
-	  })
 	  
 	app.Use(logger.New())
 	app.All("/api/v1/auth/*", func(c *fiber.Ctx) error {
