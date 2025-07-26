@@ -20,7 +20,9 @@ func Forward(c *fiber.Ctx, target string) error{
 			return err
 		}
 
-
+		c.Request().Header.VisitAll(func(key, value []byte) {
+			req.Header.Set(string(key), string(value))
+		})
 		client := http.Client{}
 		resp,err := client.Do(req)
 		if err!= nil{
@@ -36,6 +38,7 @@ func Forward(c *fiber.Ctx, target string) error{
 
 			return err
 		}
+		log.Infof("%v",string(body))
 		return c.Status(resp.StatusCode).Send(body)
 	
 }

@@ -9,8 +9,8 @@ import {
 const API_BASE = import.meta.env.VITE_API;
 const SESSION_KEY = "safetrace_session";
 
-function saveSession(user: User, token: string) {
-  localStorage.setItem(SESSION_KEY, JSON.stringify({ user, token }));
+function saveSession(user: User) {
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ user }));
 }
 
 function getCurrentUser(): User | null {
@@ -36,16 +36,22 @@ function logout(): void {
 
 async function signup(credentials: SignupCredentials): Promise<AuthResponse> {
   try {
-    const res = await axios.post(`${API_BASE}/auth/signup`, {
-      email: credentials.email,
-      password: credentials.password,
-      username: credentials.name,
-    });
+    const res = await axios.post(
+      `${API_BASE}/auth/signup`,
+      {
+        email: credentials.email,
+        password: credentials.password,
+        username: credentials.name,
+      },
+      {
+        withCredentials: true,
+      }
+    );
 
-    const { token, data: user } = res.data;
-    saveSession(user, token);
+    const { data: user } = res.data;
+    saveSession(user);
 
-    return { success: true, token, user };
+    return { success: true, user };
   } catch (err: any) {
     console.error("Signup error:", err.response?.data || err.message);
     return {
@@ -57,16 +63,23 @@ async function signup(credentials: SignupCredentials): Promise<AuthResponse> {
 
 async function login(credentials: LoginCredentials): Promise<AuthResponse> {
   try {
-    const res = await axios.post(`${API_BASE}/auth/signin`, {
-      email: credentials.email,
-      password: credentials.password,
-    });
+    const res = await axios.post(
+      `${API_BASE}/auth/signin`,
+      {
+        email: credentials.email,
+        password: credentials.password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
 
-    const { token, data: user } = res.data;
-    saveSession(user, token);
+    const { data: user } = res.data;
+    saveSession(user);
+
     console.log(res);
 
-    return { success: true, token, user };
+    return { success: true, user };
   } catch (err: any) {
     console.error("Login error:", err.response?.data || err.message);
     return {

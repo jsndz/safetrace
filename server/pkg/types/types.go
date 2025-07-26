@@ -9,5 +9,5 @@ type LocationData struct {
 	Extensions []string `json:"extensions"`
 	Timestamp int64    `json:"timestamp"`
 	Address   *string  `json:"address,omitempty"`
-
+	UserId    uint     `json:"userId"`
 }
