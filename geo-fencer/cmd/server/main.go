@@ -24,6 +24,7 @@ func main() {
 
 	log.Println("[DB] Connecting to database...")
 	database, err := db.InitDB()
+	db.MigrateDB(database)
 	if err != nil {
 		log.Fatalf("[Error] Couldn't connect to database: %v", err)
 	}

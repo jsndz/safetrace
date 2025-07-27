@@ -7,7 +7,8 @@ type Fence struct {
 	UserID    uint      `gorm:"not null;index"`
 	Latitude  float64   
 	Longitude float64
-	Radius    float64   
+	Radius    float64
+	AlertType string 
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

@@ -75,6 +75,8 @@ func (h *FenceHandler) CreateOrUpdateFence(c *gin.Context) {
 		Latitude:  req.Latitude,
 		Longitude: req.Longitude,
 		Radius:    req.Radius,
+		AlertType: req.AlertType,
+		UserID: uint(userID),
 	}
 
 	res, err := h.fenceService.CreateOrUpdateFence(uint(userID), fence)

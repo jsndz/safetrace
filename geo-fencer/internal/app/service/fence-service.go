@@ -11,6 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
+
 type FenceService struct {
 	fenceRepo   *repository.FenceRepository
 }
@@ -64,6 +65,7 @@ func (s *FenceService) CreateOrUpdateFence(userid uint,data model.Fence) (*model
 		}
 		return fence,err
 	} 
+	log.Printf("%v",data)
 	fence ,err= s.fenceRepo.Update(fence.ID, data)
 	if err!=nil{
 		log.Fatal("Error in service")
@@ -85,17 +87,33 @@ func Fencing(userId uint,stream string,db *gorm.DB) bool{
 		log.Fatal("error ",err)
 	}
 	err = db.Where("user_id = ?", userId).Find(&fence).Error
+	log.Printf("%v",fence)
 	if err != nil {
 		log.Fatal("error ",err)
 	}
 	distance := Haversine(data.Latitude, data.Longitude, fence.Latitude, fence.Longitude)
+	isInside := distance <= fence.Radius
 	log.Printf("Distance from fence: %.2f meters\n", distance)
 
-	if distance <= fence.Radius {
-		log.Println("User is inside the geofence")
-	} else {
-		log.Println("User is outside the geofence")
+	switch fence.AlertType {
+	case "enter":
+		if isInside {
+			log.Println(" Alert: Entered geofence")
+			return true
+		}
+	case "exit":
+		if !isInside {
+			log.Println(" Alert: Exited geofence")
+			return true
+		}
+	case "both":
+		log.Printf(" Alert: User is currently %s the geofence\n", map[bool]string{true: "inside", false: "outside"}[isInside])
+		return true
+	default:
+		log.Printf("Unknown AlertType: %s", fence.AlertType)
 	}
 
-	return true
+	log.Println("No alert triggered.")
+	return false
+
 }

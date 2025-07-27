@@ -24,11 +24,8 @@ func (r *FenceRepository) Create(fence *model.Fence) (*model.Fence,error) {
 
 func (r *FenceRepository) Read(userID uint) (*model.Fence, error) {
 	var fence model.Fence
-	err := r.db.Where("user_id = ?", userID).Find(&fence).Error
-	if err != nil {
-		return nil, err
-	}
-	return &fence, nil
+	err := r.db.Where("user_id = ?", userID).First(&fence).Error
+	return &fence, err
 }
 
 
