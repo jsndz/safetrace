@@ -46,7 +46,7 @@ export const Navigation: React.FC = () => {
         <button
           onClick={handleLogout}
           className="flex flex-col items-center p-3 rounded-xl transition-all duration-200 text-slate-400 hover:text-red-400 hover:bg-red-400/10"
-          title={`Logout ${user?.name || "User"}`}
+          title={`Logout ${user?.Name || "User"}`}
         >
           <LogOut size={20} />
           <span className="text-xs mt-1 font-medium">Logout</span>

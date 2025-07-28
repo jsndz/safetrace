@@ -27,6 +27,8 @@ In the future, based on circumstances i may continue to build it.
 - client:5173
 - gateway:8080
 - server:5000
+- geo-fencer:3002
+- alert:3003
 
 ---
 

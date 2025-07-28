@@ -7,10 +7,13 @@ import { MapPage } from "./pages/MapPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
+import { Notification } from "./components/Notification";
 
 function App() {
   return (
     <Router>
+      <Notification />
+
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />
