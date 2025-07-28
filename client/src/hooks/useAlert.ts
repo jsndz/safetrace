@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 const API_BASE = import.meta.env.VITE_API;
 
-export function useAlert() {
+export function useAlert(userId: string) {
   const [eventData, setEventData] = useState<string[]>([]);
   useEffect(() => {
-    const eventSource = new EventSource(`${API_BASE}/alert`);
+    const eventSource = new EventSource(`${API_BASE}/alert/${userId}`);
     eventSource.addEventListener("message", (event) => {
       setEventData((prev) => [...prev, event.data]);
     });

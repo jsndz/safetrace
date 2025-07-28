@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useAlert } from "../hooks/useAlert";
+import { useAuth } from "../hooks/useAuth";
 
 type Notification = {
   id: number;
@@ -9,7 +10,9 @@ type Notification = {
 };
 
 export function Notification() {
-  const rawMessages = useAlert();
+  const { user } = useAuth();
+
+  const rawMessages = user?.ID ? useAlert(user.ID) : [];
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {

@@ -1,26 +1,105 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"net/http"
+	"strconv"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jsndz/safetrace/alert/internal/app/handler"
+	"github.com/jsndz/safetrace/alert/pkg/kafka"
+)
+
+var (
+	userChannels = make(map[uint]chan string)
+	mu           = sync.RWMutex{}
 )
 
 func main() {
-  r := gin.Default()
-  r.GET("/ping", handler.Ping)
-  r.GET("/alerts",func(ctx *gin.Context) {
-    ctx.Writer.Header().Set("Content-type","text/event-stream")
-    ctx.Writer.Header().Set("Transfer-Encoding", "chunked")
-    flusher,ok:= ctx.Writer.(http.Flusher)
-    if !ok {
-      ctx.String(http.StatusInternalServerError, "Streaming unsupported!")
-      return
-    }
-    fmt.Fprintf(ctx.Writer,"data: is pushed\n\n")
-    flusher.Flush()
-  })
-  r.Run(":3003") 
+	r := gin.Default()
+	consumer := kafka.NewConsumerFromEnv("location", "geo_fencer")
+
+	go startKafkaConsumer(consumer)
+
+	r.GET("/health", handler.Ping)
+
+	r.GET("/alert/:id", handleAlertStream)
+
+	if err := r.Run(":3003"); err != nil {
+		log.Fatalf("Server failed to start: %v", err)
+	}
+}
+
+func startKafkaConsumer(consumer *kafka.Consumer) {
+	for {
+		msg, err := consumer.ReadFromKafka(context.Background())
+		if err != nil {
+			log.Printf("[Kafka] Error reading message: %v", err)
+			continue
+		}
+
+		key, err := strconv.ParseUint(string(msg.Key), 10, 32)
+		if err != nil {
+			log.Printf("[Kafka] Invalid user ID in key: %v", err)
+			continue
+		}
+
+		mu.RLock()
+		ch, ok := userChannels[uint(key)]
+		mu.RUnlock()
+		if ok {
+			select {
+			case ch <- string(msg.Value):
+			default:
+				log.Printf("[SSE] Dropping message for user %d (no listener)", key)
+			}
+		}
+	}
+}
+
+func handleAlertStream(ctx *gin.Context) {
+	ctx.Writer.Header().Set("Content-Type", "text/event-stream")
+	ctx.Writer.Header().Set("Transfer-Encoding", "chunked")
+
+	idParam := ctx.Param("id")
+	userID, err := strconv.ParseUint(idParam, 10, 32)
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "Invalid user ID")
+		return
+	}
+
+	ch := make(chan string, 10)
+	mu.Lock()
+	userChannels[uint(userID)] = ch
+	mu.Unlock()
+
+	flusher, ok := ctx.Writer.(http.Flusher)
+	if !ok {
+		ctx.String(http.StatusInternalServerError, "Streaming unsupported")
+		return
+	}
+
+	notify := ctx.Done()
+
+	go func() {
+		defer func() {
+			mu.Lock()
+			delete(userChannels, uint(userID))
+			mu.Unlock()
+			close(ch)
+		}()
+
+		for {
+			select {
+			case msg := <-ch:
+				fmt.Fprintf(ctx.Writer, "data: %s\n\n", msg)
+				flusher.Flush()
+			case <-notify:
+				return
+			}
+		}
+	}()
 }

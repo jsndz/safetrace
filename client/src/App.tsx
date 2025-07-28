@@ -12,7 +12,6 @@ import { Notification } from "./components/Notification";
 function App() {
   return (
     <Router>
-      <Notification />
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />
@@ -23,6 +22,7 @@ function App() {
           path="/"
           element={
             <ProtectedRoute>
+              <Notification />
               <Layout />
             </ProtectedRoute>
           }
