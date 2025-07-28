@@ -45,14 +45,13 @@ func main() {
 		ctx.JSON(http.StatusAccepted, gin.H{"message": "ok"})
 	})
 
-	topic := "location"
-	consumer := kafka.NewConsumerFromEnv(topic, "geo_fencer")
+	producer := kafka.NewProducerFromEnv()
+	consumer := kafka.NewConsumerFromEnv( "location", "geo_fencer")
 	defer func() {
 		log.Println("[Kafka] Closing consumer...")
 		consumer.Close()
 	}()
 
-	log.Printf("[Kafka] Listening to topic: %s\n", topic)
 	go func() {
 		for {
 			msg, err := consumer.ReadFromKafka(context.Background())
@@ -60,15 +59,12 @@ func main() {
 				log.Printf("[Kafka] Error reading message: %v", err)
 				continue
 			}
-
 			key, err := strconv.ParseUint(string(msg.Key), 10, 1)
 			if err != nil {
 				log.Printf("[Kafka] Error parsing key: %v", err)
 				continue
 			}
-
-			log.Printf("[Kafka] Received - UserID: %v | Data: %s", key, string(msg.Value))
-			service.Fencing(uint(key), string(msg.Value), database)
+			service.Fencing(uint(key), string(msg.Value), database,producer)
 		}
 	}()
 

@@ -13,7 +13,6 @@ function App() {
   return (
     <Router>
       <Notification />
-
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />

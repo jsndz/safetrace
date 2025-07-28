@@ -9,7 +9,7 @@ type Notification = {
 };
 
 export function Notification() {
-  const rawMessages = useAlert("/alerts");
+  const rawMessages = useAlert();
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {

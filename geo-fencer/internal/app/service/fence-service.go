@@ -1,13 +1,16 @@
 package service
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"math"
 
 	"github.com/jsndz/safetrace/geo-fencer/internal/app/model"
 	"github.com/jsndz/safetrace/geo-fencer/internal/app/repository"
+	"github.com/jsndz/safetrace/geo-fencer/pkg/kafka"
 	"gorm.io/gorm"
 )
 
@@ -80,7 +83,7 @@ func ParseLocationData(data string) (LocationData, error) {
     }
     return location, nil
 }
-func Fencing(userId uint,stream string,db *gorm.DB) bool{
+func Fencing(userId uint,stream string,db *gorm.DB,p *kafka.Producer) bool{
 	var fence model.Fence
 	data, err := ParseLocationData(stream)
 	if err != nil {
@@ -98,16 +101,20 @@ func Fencing(userId uint,stream string,db *gorm.DB) bool{
 	switch fence.AlertType {
 	case "enter":
 		if isInside {
-			log.Println(" Alert: Entered geofence")
+			log.Println("Alert: Entered geofence")
+			p.Publish(context.Background(),"alert",fmt.Appendf(nil, "%d", userId),[]byte("Alert: Entered geofence"))
 			return true
 		}
 	case "exit":
 		if !isInside {
 			log.Println(" Alert: Exited geofence")
+			p.Publish(context.Background(),"alert",fmt.Appendf(nil, "%d", userId),[]byte("Alert: Exited geofence"))
 			return true
 		}
 	case "both":
-		log.Printf(" Alert: User is currently %s the geofence\n", map[bool]string{true: "inside", false: "outside"}[isInside])
+		message := fmt.Sprintf("Alert: User is currently %s the geofence", map[bool]string{true: "inside", false: "outside"}[isInside])
+		log.Println(message)
+		p.Publish(context.Background(), "alert", fmt.Appendf(nil,"%d", userId), []byte(message))
 		return true
 	default:
 		log.Printf("Unknown AlertType: %s", fence.AlertType)
