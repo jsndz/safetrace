@@ -19,7 +19,7 @@ func Authenticate(c *fiber.Ctx) error {
 
 	tokenString := c.Cookies("token")
 
-
+	log.Infof("%v",tokenString)
 	if tokenString == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Token not provided",

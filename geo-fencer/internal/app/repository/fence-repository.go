@@ -30,14 +30,16 @@ func (r *FenceRepository) Read(userID uint) (*model.Fence, error) {
 
 
 
-func (r *FenceRepository) Update(UserID uint, data model.Fence) (*model.Fence, error) {
-	var fence model.Fence
-	if err := r.db.Model(&fence).Where("user_id = ?", UserID).Updates(data).Error; err != nil {
+func (r *FenceRepository) Update(userID uint, data model.Fence) (*model.Fence, error) {
+	if err := r.db.Model(&model.Fence{}).
+		Where("user_id = ?", userID).
+		Updates(data).Error; err != nil {
 		return nil, err
 	}
-	err := r.db.Where("user_id = ?", UserID).Find(&fence).Error
-	if err!=nil {
-		return nil,err
+
+	var updated model.Fence
+	if err := r.db.Where("user_id = ?", userID).First(&updated).Error; err != nil {
+		return nil, err
 	}
-	return &fence, nil
+	return &updated, nil
 }

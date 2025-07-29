@@ -64,14 +64,14 @@ func (s *FenceService) CreateOrUpdateFence(userid uint,data model.Fence) (*model
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		fence ,err= s.fenceRepo.Create(&data)
 		if err!=nil{
-			log.Fatal("Error in service")
+			log.Fatal("Error in service 1")
 		}
 		return fence,err
 	} 
 	log.Printf("%v",data)
-	fence ,err= s.fenceRepo.Update(fence.ID, data)
+	fence ,err= s.fenceRepo.Update(userid, data)
 	if err!=nil{
-		log.Fatal("Error in service")
+		log.Fatal("Error in service2")
 	}
 	return fence,nil
 }

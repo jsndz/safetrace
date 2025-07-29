@@ -11,8 +11,9 @@ type Notification = {
 
 export function Notification() {
   const { user } = useAuth();
+  const rawMessages = useAlert(user?.ID!);
+  console.log("ALERT");
 
-  const rawMessages = user?.ID ? useAlert(user.ID) : [];
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
@@ -38,6 +39,7 @@ export function Notification() {
 
   return (
     <div className="fixed top-4 right-4 z-50 flex flex-col space-y-2 max-w-sm">
+      <h1>HRO</h1>
       {notifications.map((n) => (
         <div
           key={n.id}

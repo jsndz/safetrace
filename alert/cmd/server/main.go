@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jsndz/safetrace/alert/internal/app/handler"
 	"github.com/jsndz/safetrace/alert/pkg/kafka"
@@ -20,13 +22,20 @@ var (
 
 func main() {
 	r := gin.Default()
-	consumer := kafka.NewConsumerFromEnv("location", "geo_fencer")
-
+	consumer := kafka.NewConsumerFromEnv("alert", "geo_fencer")
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:8080","http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 	go startKafkaConsumer(consumer)
 
 	r.GET("/health", handler.Ping)
 
-	r.GET("/alert/:id", handleAlertStream)
+	r.GET("/api/v1/alert/:id", handleAlertStream)
 
 	if err := r.Run(":3003"); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
@@ -52,15 +61,19 @@ func startKafkaConsumer(consumer *kafka.Consumer) {
 		mu.RUnlock()
 		if ok {
 			select {
-			case ch <- string(msg.Value):
-			default:
-				log.Printf("[SSE] Dropping message for user %d (no listener)", key)
-			}
+				case ch <- string(msg.Value):
+				//non blocking 
+				//if the condition is not possible the default is executed
+				//hence non blocking behaviour
+				default:
+					log.Printf("[SSE] Dropping message for user %d (no listener)", key)
+				}
 		}
 	}
 }
 
 func handleAlertStream(ctx *gin.Context) {
+	log.Println("HELLO")
 	ctx.Writer.Header().Set("Content-Type", "text/event-stream")
 	ctx.Writer.Header().Set("Transfer-Encoding", "chunked")
 
@@ -84,22 +97,22 @@ func handleAlertStream(ctx *gin.Context) {
 
 	notify := ctx.Done()
 
-	go func() {
-		defer func() {
-			mu.Lock()
-			delete(userChannels, uint(userID))
-			mu.Unlock()
-			close(ch)
-		}()
 
-		for {
-			select {
-			case msg := <-ch:
-				fmt.Fprintf(ctx.Writer, "data: %s\n\n", msg)
-				flusher.Flush()
-			case <-notify:
-				return
-			}
-		}
+	defer func() {
+		mu.Lock()
+		delete(userChannels, uint(userID))
+		mu.Unlock()
+		close(ch)
 	}()
+
+	for {
+		select {
+		case msg := <-ch:
+			fmt.Fprintf(ctx.Writer, "data: %s\n\n", msg)
+			flusher.Flush()
+		case <-notify:
+			return
+		}
+	}
+
 }
