@@ -82,6 +82,19 @@ services:
     depends_on:
       - kafka
       - fencer-db
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - KAFKA_BROKER=kafka:9092
+    env_file:
+      - ".env"
+    depends_on:
+      - kafka
   location-logger:
     build:
       context: ./location-logger
