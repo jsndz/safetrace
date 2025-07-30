@@ -6,7 +6,7 @@ import {
   AuthResponse,
 } from "../types/auth";
 
-const API_BASE = import.meta.env.VITE_API;
+const API_BASE = import.meta.env.CLIENT_VITE_API;
 const SESSION_KEY = "safetrace_session";
 
 function saveSession(user: User) {
@@ -76,8 +76,6 @@ async function login(credentials: LoginCredentials): Promise<AuthResponse> {
 
     const { data: user } = res.data;
     saveSession(user);
-
-    console.log(res);
 
     return { success: true, user };
   } catch (err: any) {

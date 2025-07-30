@@ -49,8 +49,6 @@ export const useLocationTracking = (enabledExtensions: string[] = []) => {
         extensions: enabledExtensions,
       };
 
-      console.log(enabledExtensions);
-
       addLocationToHistory(locationData);
       sendLocation(locationData);
     },

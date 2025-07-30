@@ -7,11 +7,11 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o /auth_server ./cmd/server
+RUN go build -o /geo_fencer ./cmd/server
 
 FROM alpine:latest
 
-COPY --from=builder /auth_server /auth_server
+COPY --from=builder /geo_fencer /geo_fencer
 
-EXPOSE 3001
-CMD ["/auth_server"]
+EXPOSE 3002
+CMD ["/geo_fencer"]

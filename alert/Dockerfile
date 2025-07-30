@@ -7,11 +7,11 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o /auth_server ./cmd/server
+RUN go build -o /alert_server ./cmd/server
 
 FROM alpine:latest
 
-COPY --from=builder /auth_server /auth_server
+COPY --from=builder /alert_server /alert_server
 
-EXPOSE 3001
-CMD ["/auth_server"]
+EXPOSE 3003
+CMD ["/alert_server"]

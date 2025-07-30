@@ -44,7 +44,7 @@ func main() {
 
 	authGroup := app.Group("/api/v1/auth")
 	route.SetUpRoute(authGroup, dbConn)
-	port := getEnv("PORT","3001")
+	port := getEnv("AUTH_PORT","3001")
 	fmt.Println("Connected:", dbConn)
 	fmt.Println("Server running on port:", port)
 	if err := app.Listen(":" + port); err != nil {

@@ -53,19 +53,13 @@ export const useExtensions = () => {
   const saveExtensionConfig = useCallback(
     async (extensionId: string, config: ExtensionConfig) => {
       try {
-        console.log(config);
-
         const link = EXTENSION_DEFINITIONS.find(
           (ex) => ex.id == extensionId
         )?.link;
 
-        const response = await axios.post(
-          `${link}/${user?.ID}`,
-          config,
-          {
-            withCredentials: true,
-          }
-        );
+        const response = await axios.post(`${link}/${user?.ID}`, config, {
+          withCredentials: true,
+        });
 
         if (!response) {
           throw new Error("Failed to save configuration");

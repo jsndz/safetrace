@@ -11,12 +11,12 @@ import (
 
 
 func InitDB() (*gorm.DB,error){
-	host := os.Getenv("DB_HOST")
-	port := os.Getenv("DB_PORT")
-	user := os.Getenv("DB_USER")
-	password := os.Getenv("DB_PASSWORD")
-	dbname := os.Getenv("DB_NAME")
-	timezone := os.Getenv("DB_TIMEZONE")
+	host := os.Getenv("AUTH_DB_HOST")
+	port := os.Getenv("AUTH_DB_PORT")
+	user := os.Getenv("AUTH_DB_USER")
+	password := os.Getenv("AUTH_DB_PASSWORD")
+	dbname := os.Getenv("AUTH_DB_NAME")
+	timezone := os.Getenv("AUTH_DB_TIMEZONE")
 
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=%s",

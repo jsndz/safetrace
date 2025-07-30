@@ -25,7 +25,6 @@ export const useAuth = () => {
 
     try {
       const response = await authService.login(credentials);
-      console.log(response.user);
 
       if (response.success && response.user) {
         setState({

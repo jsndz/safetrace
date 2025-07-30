@@ -7,11 +7,11 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o /auth_server ./cmd/server
+RUN go build -o /location_logger ./
 
 FROM alpine:latest
 
-COPY --from=builder /auth_server /auth_server
+COPY --from=builder /location_logger /location_logger
 
-EXPOSE 3001
-CMD ["/auth_server"]
+
+CMD ["/location_logger"]

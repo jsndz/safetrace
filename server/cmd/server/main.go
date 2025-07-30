@@ -7,8 +7,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/jsndz/safetrace/pkg/kafka"
-	"github.com/jsndz/safetrace/pkg/types"
+	"github.com/jsndz/safetrace/server/pkg/kafka"
+	"github.com/jsndz/safetrace/server/pkg/types"
 )
 
 func main() {
@@ -20,7 +20,7 @@ func main() {
 		AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
 	}))
 
-	producer := kafka.NewProducer([]string{"localhost:9092"})
+	producer := kafka.NewProducerFromEnv()
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("SafeTrace Backend is Running")
 	})

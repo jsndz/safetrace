@@ -37,9 +37,6 @@ export const SettingsPage: React.FC = () => {
       darkMode,
     };
     localStorage.setItem("location_tracker_settings", JSON.stringify(settings));
-
-    // You could also trigger a toast notification here
-    console.log("Settings saved!");
   };
 
   return (

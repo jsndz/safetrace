@@ -12,7 +12,6 @@ type Notification = {
 export function Notification() {
   const { user } = useAuth();
   const rawMessages = useAlert(user?.ID!);
-  console.log("ALERT");
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
 

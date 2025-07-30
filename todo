@@ -98,7 +98,7 @@
 
   - [x] Kafka consumer of `alerts` topic
   - [x] Maintain map of `userId → SSE connection`
-  - [x] Push alert to correct client
+  - [x] Push alert to correct clientCopy
 
 - [x] Frontend:
 

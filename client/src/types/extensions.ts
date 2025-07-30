@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API;
+const API_BASE = import.meta.env.CLIENT_VITE_API;
 
 export interface ExtensionConfig {
   [key: string]: any;
