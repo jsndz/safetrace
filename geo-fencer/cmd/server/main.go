@@ -9,7 +9,6 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/jsndz/safetrace/geo-fencer/internal/app/service"
 	"github.com/jsndz/safetrace/geo-fencer/pkg/db"
 	"github.com/jsndz/safetrace/geo-fencer/pkg/kafka"
@@ -17,11 +16,6 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("[Error] Failed to load .env file")
-	}
-	log.Println("[Boot] .env loaded successfully.")
-
 	log.Println("[DB] Connecting to database...")
 	database, err := db.InitDB()
 	db.MigrateDB(database)

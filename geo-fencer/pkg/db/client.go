@@ -16,11 +16,10 @@ func InitDB() (*gorm.DB,error){
 	user := os.Getenv("FENCER_DB_USER")
 	password := os.Getenv("FENCER_DB_PASSWORD")
 	dbname := os.Getenv("FENCER_DB_NAME")
-	timezone := os.Getenv("FENCER_DB_TIMEZONE")
 
 	dsn := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=%s",
-		host, user, password, dbname, port, timezone,
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		host, user, password, dbname, port, 
 	)	
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {

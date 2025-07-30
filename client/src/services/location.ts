@@ -2,7 +2,7 @@ import axios from "axios";
 import { LocationData } from "../types/location";
 import { authService } from "./auth";
 
-const apiUrl = import.meta.env.CLIENT_VITE_API;
+const apiUrl = import.meta.env.VITE_CLIENT_API;
 
 export const sendLocation = async (data: LocationData) => {
   const user = authService.getCurrentUser();
