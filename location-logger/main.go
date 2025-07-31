@@ -10,9 +10,9 @@ import (
 
 func main() {
 	log.Println(" Kafka consumer started")
-
+	BROKER := os.Getenv("KAFKA_BROKER")
 	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:   []string{"localhost:9092"},
+		Brokers:   []string{BROKER},
 		Topic:     "location",
 		GroupID:   "logger-consumer",
 		MinBytes:  1,
