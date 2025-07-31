@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: server-config
+data:
+  KAFKA_BROKER: kafka:9092
+  STATE: docker
+  SERVER_ORIGIN: http://safetrace.local

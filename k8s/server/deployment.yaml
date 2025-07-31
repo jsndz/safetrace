@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth
+  name: server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth
+      app: server
   template:
     metadata:
       labels:
-        app: auth
+        app: server
     spec:
       containers:
-        - name: auth
-          image: jsndz/safetrace_auth:latest
+        - name: server
+          image: jsndz/safetrace_server:latest
           ports:
-            - containerPort: 3001
+            - containerPort: 5000
           envFrom:
             - configMapRef:
-                name: auth-config
+                name: server-config
             - secretRef:
-                name: auth-secret
+                name: server-secret

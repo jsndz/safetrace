@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"os"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,8 +14,10 @@ import (
 
 func main() {
 	app := fiber.New()
+	ORIGIN1:= os.Getenv("SERVER_ORIGIN")
+
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:8080",
+		AllowOrigins: ORIGIN1,
 		AllowCredentials: true,
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 		AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",

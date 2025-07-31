@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geo-fencer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: geo-fencer
+  template:
+    metadata:
+      labels:
+        app: geo-fencer
+    spec:
+      containers:
+        - name: geo-fencer
+          image: jsndz/safetrace_geo-fencer:latest
+          ports:
+            - containerPort: 3002
+          envFrom:
+            - configMapRef:
+                name: geo-fencer-config
+            - secretRef:
+                name: geo-fencer-secret

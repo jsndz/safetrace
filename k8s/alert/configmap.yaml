@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alert-config
+data:
+  KAFKA_BROKER: kafka:9092
+  STATE: docker
+  ALERT_ORIGIN_ONE: http://safetrace.local
+  ALERT_ORIGIN_TWO: http://safetrace.local/api

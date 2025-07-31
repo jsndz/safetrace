@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -23,8 +24,11 @@ var (
 func main() {
 	r := gin.Default()
 	consumer := kafka.NewConsumerFromEnv("alert", "geo_fencer")
+	ORIGIN1:= os.Getenv("ALERT_ORIGIN_ONE")
+	ORIGIN2:= os.Getenv("ALERT_ORIGIN_TWO")
+
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:8080","http://localhost:5173"},
+		AllowOrigins:     []string{ORIGIN1,ORIGIN2},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},

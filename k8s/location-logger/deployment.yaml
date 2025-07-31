@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: location-logger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: location-logger
+  template:
+    metadata:
+      labels:
+        app: location-logger
+    spec:
+      containers:
+        - name: location-logger
+          image: jsndz/safetrace_location-logger:latest
+          envFrom:
+            - configMapRef:
+                name: location-logger-config
