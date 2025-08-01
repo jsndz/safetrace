@@ -6,5 +6,5 @@ spec:
   selector:
     app: fencer-db
   ports:
-    - port: 5434
+    - port: 5432
       targetPort: 5432

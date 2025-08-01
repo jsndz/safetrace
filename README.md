@@ -102,6 +102,96 @@ npm run dev
 
 ---
 
+## Kubernetes (Local)
+
+### 1. Start Minikube
+
+```bash
+minikube start
+```
+
+> This starts a local Kubernetes cluster with Docker or your configured VM driver.
+
+---
+
+### 2. Enable Ingress Controller (if not already)
+
+```bash
+minikube addons enable ingress
+```
+
+> Required to route traffic from `safetrace.local` to your services.
+
+---
+
+### 3. Deploy your Kubernetes manifests
+
+```bash
+bash ./scripts/k8s_deploy.sh
+```
+
+> This should create Deployments, Services, and an Ingress (assumed).
+
+---
+
+### 4. Edit your `/etc/hosts`
+
+```bash
+sudo nano /etc/hosts
+```
+
+Add this line:
+
+```
+127.0.0.1    safetrace.local
+```
+
+> Do **not** use `192.168.49.2` here unless you're not tunneling.
+
+---
+
+### 5. Start the Minikube Tunnel
+
+```bash
+minikube tunnel
+```
+
+> This exposes `LoadBalancer` services on your localhost (needed for Ingress).
+
+> **Keep this terminal open** — closing it stops the tunnel.
+
+---
+
+### 6. Verify the services and ingress
+
+Check that Ingress and your app are up:
+
+```bash
+kubectl get ingress
+kubectl get svc
+kubectl get pods
+```
+
+And test:
+
+```bash
+curl -v http://safetrace.local/
+```
+
+If you get a response (HTML or JSON), it's working
+
+---
+
+### Troubleshooting Tips
+
+- If `curl` times out:
+
+  - Ensure `minikube tunnel` is running
+  - Check `kubectl describe ingress` for rules and backend service
+  - Ensure the service you’re routing to has matching `selector` and `targetPort`
+
+---
+
 ## Extensions (Kafka Consumers)
 
 | Extension         | Description                            |
