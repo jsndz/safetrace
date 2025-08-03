@@ -11,3 +11,5 @@ data:
   AUTH_DB_TIMEZONE: Asia/Kolkata
   KAFKA_BROKER: kafka:9092
   STATE: docker
+  AUTH_DOCKER_ORIGIN: http://safetrace.local
+  AUTH_DEV_ORIGIN: http://localhost:8080

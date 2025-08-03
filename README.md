@@ -10,6 +10,11 @@ If you are locally running the project use docker.
 
 ---
 
+![](public/2.png)
+![](public/1.png)
+
+---
+
 ## Features
 
 - Real-time location tracking from frontend
@@ -19,7 +24,7 @@ If you are locally running the project use docker.
 - Geo-fencing alerts
 - Meetup proximity detection
 - Location logging to file
-- Real-time updates to frontend via WebSocket
+- Real-time updates to frontend via SSE
 
 ---
 
@@ -127,7 +132,8 @@ minikube addons enable ingress
 ### 3. Deploy your Kubernetes manifests
 
 ```bash
-bash ./scripts/k8s_deploy.sh
+cd k8s
+bash ../scripts/k8s_deploy.sh
 ```
 
 > This should create Deployments, Services, and an Ingress (assumed).
