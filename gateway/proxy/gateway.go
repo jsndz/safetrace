@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"io"
@@ -30,7 +31,6 @@ func Forward(c *fiber.Ctx, target string) error{
 
 		body, err := io.ReadAll(resp.Body)
 		if err!= nil{
-
 			return err
 		}
 		return c.Status(resp.StatusCode).Send(body)	
@@ -145,4 +145,49 @@ func ForwardReturn(c *fiber.Ctx, target string) (map[string]interface{},error){
 	}
 	return responseBody,nil
 
+}
+
+
+func ForwardSSE(c *fiber.Ctx, target string) error {
+	req,err:= http.NewRequest(c.Method(),target+c.OriginalURL(),bytes.NewReader(c.Body()))
+	log.Infof("%v",target+c.OriginalURL())
+	if(err!=nil){
+		return err
+	}
+
+	c.Request().Header.VisitAll(func(key, value []byte) {
+		req.Header.Set(string(key), string(value))
+	})
+	
+	client := http.Client{}
+	resp,err := client.Do(req)
+	if err!= nil{
+		return err
+	}
+	for key, values := range resp.Header {
+		for _, v := range values {
+			c.Append(key, v)
+		}
+	}
+
+	c.Set("Content-Type", "text/event-stream")
+	c.Set("Cache-Control", "no-cache")
+	c.Set("Connection", "keep-alive")
+	c.Set("Transfer-Encoding", "chunked")
+
+	c.Context().SetBodyStreamWriter(func(w *bufio.Writer) {
+		buf := make([]byte,1024)
+		for {
+			n, err := resp.Body.Read(buf)
+			if n > 0 {
+				w.Write(buf[:n])
+				log.Info(string(buf[:n]))
+				w.Flush()
+			}
+			if err != nil {
+				break
+			}
+		}
+	})
+	return nil
 }

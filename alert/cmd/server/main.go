@@ -5,14 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"sync"
-	"time"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/jsndz/safetrace/alert/internal/app/handler"
 	"github.com/jsndz/safetrace/alert/pkg/kafka"
 )
 
@@ -20,24 +16,17 @@ var (
 	userChannels = make(map[uint]chan string)
 	mu           = sync.RWMutex{}
 )
+func Ping(c *gin.Context) {
+  c.JSON(http.StatusOK, gin.H{"message": "pong"})
+}
 
 func main() {
 	r := gin.Default()
 	consumer := kafka.NewConsumerFromEnv("alert", "geo_fencer")
-	ORIGIN1:= os.Getenv("ALERT_ORIGIN_ONE")
-	ORIGIN2:= os.Getenv("ALERT_ORIGIN_TWO")
 
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{ORIGIN1,ORIGIN2},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
 	go startKafkaConsumer(consumer)
 
-	r.GET("/health", handler.Ping)
+	r.GET("/health", Ping)
 
 	r.GET("/api/v1/alert/:id", handleAlertStream)
 
@@ -66,6 +55,7 @@ func startKafkaConsumer(consumer *kafka.Consumer) {
 		if ok {
 			select {
 				case ch <- string(msg.Value):
+				log.Println(string(msg.Value))
 				//non blocking 
 				//if the condition is not possible the default is executed
 				//hence non blocking behaviour
@@ -112,6 +102,7 @@ func handleAlertStream(ctx *gin.Context) {
 	for {
 		select {
 		case msg := <-ch:
+			log.Println(string(msg))
 			fmt.Fprintf(ctx.Writer, "data: %s\n\n", msg)
 			flusher.Flush()
 		case <-notify:

@@ -3,26 +3,16 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"os"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/jsndz/safetrace/server/pkg/kafka"
 	"github.com/jsndz/safetrace/server/pkg/types"
 )
 
 func main() {
 	app := fiber.New()
-	ORIGIN1:= os.Getenv("SERVER_ORIGIN")
-
-	app.Use(cors.New(cors.Config{
-		AllowOrigins: ORIGIN1,
-		AllowCredentials: true,
-		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
-		AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
-	}))
-
 	producer := kafka.NewProducerFromEnv()
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("SafeTrace Backend is Running")
@@ -49,8 +39,16 @@ func main() {
 			})
 		}
 		key :=[]byte(strconv.FormatUint(uint64(data.UserId), 10))
-		producer.Publish(context.Background(), "location", key, []byte(value))
-
+		err= producer.Publish(context.Background(), "location", key, []byte(value))
+		if err != nil {
+			log.Error(err.Error())
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"data":    nil,
+				"message": "Failed to publish to Kafka",
+				"success": false,
+				"err":     err.Error(),
+			})
+		}
 		return c.JSON(fiber.Map{
 			"status":  "ok",
 			"message": "Location received",

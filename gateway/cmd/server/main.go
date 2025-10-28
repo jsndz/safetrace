@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -33,10 +34,12 @@ func main() {
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     origin,
-		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization, Cache-Control",
 		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS",
 		AllowCredentials: true,
+		ExposeHeaders:    "Content-Type, Cache-Control, Transfer-Encoding",
 	}))
+
 	app.Use(func(c *fiber.Ctx) error {
 		limiter := middleware.NewRateLimiter(5, 10)
 		if limiter.Allow() {
@@ -60,7 +63,8 @@ func main() {
 		return proxy.Forward(c, fencerURL)
 	})
 	app.All("/api/v1/alert/*", func(c *fiber.Ctx) error {
-		return proxy.Forward(c, alertURL)
+		log.Println("HIT ALERT ENNDPOINT")
+		return proxy.ForwardSSE(c, alertURL)
 	})
 	app.Listen(":8080")
 }

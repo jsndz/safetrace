@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: location-logger-config
-data:
-  KAFKA_BROKER: kafka:9092
-  STATE: docker

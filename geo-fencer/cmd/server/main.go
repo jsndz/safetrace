@@ -4,11 +4,8 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
-	"time"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jsndz/safetrace/geo-fencer/internal/app/service"
 	"github.com/jsndz/safetrace/geo-fencer/pkg/db"
@@ -18,8 +15,7 @@ import (
 
 func main() {
 	log.Println("[DB] Connecting to database...")
-	ORIGIN1:= os.Getenv("FENCER_ORIGIN_ONE")
-	ORIGIN2:= os.Getenv("FENCER_ORIGIN_TWO")
+
 	database, err := db.InitDB()
 	db.MigrateDB(database)
 	if err != nil {
@@ -29,14 +25,6 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Recovery())
 
-	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{ORIGIN1,ORIGIN2},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
 
 	router.GET("/health", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusAccepted, gin.H{"message": "ok"})
