@@ -16,22 +16,13 @@ func main() {
 
 	var origin string
 	var authURL, locationURL, fencerURL, alertURL string
-
-	state := os.Getenv("STATE")
-	if state == "docker" {
-		origin = os.Getenv("GATEWAY_DOCKER_ORIGIN")
-		authURL = os.Getenv("AUTH_DOCKER_URL")
-		locationURL = os.Getenv("SERVER_DOCKER_URL")
-		fencerURL = os.Getenv("FENCER_DOCKER_URL")
-		alertURL = os.Getenv("ALERT_DOCKER_URL")
-	} else {
-		origin = os.Getenv("GATEWAY_DEV_ORIGIN")
-		authURL = os.Getenv("AUTH_DEV_URL")
-		locationURL = os.Getenv("SERVER_DEV_URL")
-		fencerURL = os.Getenv("FENCER_DEV_URL")
-		alertURL = os.Getenv("ALERT_DEV_URL")
-	}
-
+	
+	origin = os.Getenv("ORIGIN")
+	authURL = os.Getenv("AUTH_URL")
+	locationURL = os.Getenv("SERVER_URL")
+	fencerURL = os.Getenv("FENCER_URL")
+	alertURL = os.Getenv("ALERT_URL")
+	
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     origin,
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization, Cache-Control",

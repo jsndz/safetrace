@@ -47,7 +47,7 @@ func (p *Producer) Close() error {
 
 
 func NewProducerAvien()*Producer{
-	kafkaURL := utils.GetEnv("AVIEN_KAFKA_URL")
+	kafkaURL := utils.GetEnv("PROD_KAFKA_URL")
 
 	keypair, caCertPool :=utils.Decode()
 
