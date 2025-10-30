@@ -17,12 +17,13 @@ func main() {
 	var origin string
 	var authURL, locationURL, fencerURL, alertURL string
 	
+
 	origin = os.Getenv("ORIGIN")
 	authURL = os.Getenv("AUTH_URL")
 	locationURL = os.Getenv("SERVER_URL")
 	fencerURL = os.Getenv("FENCER_URL")
 	alertURL = os.Getenv("ALERT_URL")
-	
+	log.Println(origin)
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     origin,
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization, Cache-Control",

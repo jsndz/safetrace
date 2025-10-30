@@ -6,7 +6,9 @@ import {
   AuthResponse,
 } from "../types/auth";
 
-const API_BASE = import.meta.env.VITE_CLIENT_API;
+// const API_BASE = import.meta.env.VITE_CLIENT_API;
+const API_BASE =
+  import.meta.env.VITE_CLIENT_API || "http://localhost:8080/api/v1";
 const SESSION_KEY = "safetrace_session";
 
 function saveSession(user: User) {

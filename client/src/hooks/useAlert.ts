@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-const API_BASE = import.meta.env.VITE_CLIENT_API;
-
+// const API_BASE = import.meta.env.VITE_CLIENT_API;
+const API_BASE =
+  import.meta.env.VITE_CLIENT_API || "http://localhost:8080/api/v1";
 export function useAlert(userId: string) {
   const [eventData, setEventData] = useState<string[]>([]);
 

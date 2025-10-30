@@ -1,5 +1,6 @@
-const API_BASE = import.meta.env.VITE_CLIENT_API;
-
+// const API_BASE = import.meta.env.VITE_CLIENT_API;
+const API_BASE =
+  import.meta.env.VITE_CLIENT_API || "http://localhost:8080/api/v1";
 export interface ExtensionConfig {
   [key: string]: any;
 }
