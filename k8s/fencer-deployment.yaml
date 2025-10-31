@@ -1,21 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: geo-fencer
+  name: fencer
   namespace: safetrace
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: geo-fencer
+      app: fencer
   template:
     metadata:
       labels:
-        app: geo-fencer
+        app: fencer
     spec:
       containers:
-        - name: geo-fencer
+        - name: fencer
           image: jsndz/safetrace_geo-fencer:latest
+          envFrom:
+            - configMapRef:
+                name: configs
+            - secretRef:
+                name: safetrace-secrets
           resources:
             limits:
               memory: "128Mi"
@@ -24,4 +29,4 @@ spec:
               memory: "64Mi"
               cpu: "250m"
           ports:
-            - containerPort: 3001
+            - containerPort: 3002
