@@ -1,7 +1,8 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: server
+  name: server-service
+  namespace: safetrace
 spec:
   selector:
     app: server

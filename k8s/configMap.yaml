@@ -10,6 +10,7 @@ data:
   VITE_CLIENT_API: "http://localhost:8080/api/v1"
   STATE: "docker"
   KAFKA_BROKER: "kafka:9092"
+  ORIGIN: "*"
 
   AUTH_URL: "http://auth-service:3001"
   SERVER_URL: "http://server-service:5000"

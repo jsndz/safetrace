@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: alert
+  name: alert-service
   namespace: safetrace
 spec:
   selector:

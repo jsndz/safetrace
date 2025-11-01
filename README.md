@@ -10,6 +10,7 @@ If you are locally running the project use docker.
 
 ---
 
+![](public/architecture.png)
 ![](public/2.png)
 ![](public/1.png)
 

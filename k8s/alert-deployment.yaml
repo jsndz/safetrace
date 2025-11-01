@@ -16,6 +16,13 @@ spec:
       containers:
         - name: alert
           image: jsndz/safetrace_alert:latest
+          ports:
+            - containerPort: 3003
+          envFrom:
+            - configMapRef:
+                name: safetrace-config
+            - secretRef:
+                name: safetrace-secrets
           resources:
             limits:
               memory: "128Mi"
@@ -23,5 +30,3 @@ spec:
             requests:
               memory: "64Mi"
               cpu: "250m"
-          ports:
-            - containerPort: 3003

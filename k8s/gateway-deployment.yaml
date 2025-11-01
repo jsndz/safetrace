@@ -24,4 +24,9 @@ spec:
               memory: "64Mi"
               cpu: "250m"
           ports:
-            - containerPort: 3001
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: safetrace-config
+            - secretRef:
+                name: safetrace-secrets

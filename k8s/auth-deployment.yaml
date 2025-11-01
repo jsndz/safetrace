@@ -20,7 +20,7 @@ spec:
             - containerPort: 3001
           envFrom:
             - configMapRef:
-                name: configs
+                name: safetrace-config
             - secretRef:
                 name: safetrace-secrets
           resources:
