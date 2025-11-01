@@ -167,6 +167,134 @@ SafeTrace is a modular, event‑driven real‑time location tracking system. A T
 - One‑command bring‑up with `docker compose up -d`
 - Services have individual Dockerfiles
 
+### Development Environment (Devbox)
+This project uses [Devbox](https://www.jetpack.io/devbox) to manage development dependencies and tools. Devbox ensures consistent environments across different machines by defining all required tools (Go, Node.js, kubectl, kind, etc.) in `devbox.json`.
+
+**Setup:**
+1. Install Devbox (if not already installed):
+   ```bash
+   curl -fsSL https://get.jetpack.io/devbox | bash
+   ```
+
+2. Enter the Devbox shell:
+   ```bash
+   devbox shell
+   ```
+   This will automatically install and configure all required tools including:
+   - Go (latest)
+   - Node.js 20
+   - kubectl, kind, k9s (Kubernetes tools)
+   - go-task (Taskfile runner)
+   - And other utilities (gh, jq, helm, etc.)
+
+3. Once in the devbox shell, you can use `task` commands for Kubernetes operations (see Taskfile section below).
+
+### Taskfile (Task Runner)
+The project uses [Task](https://taskfile.dev/) to automate common Kubernetes operations. Taskfile commands provide a convenient way to manage the Kubernetes cluster and deployments without remembering complex kubectl commands.
+
+**Available Task Commands:**
+
+**Kind Cluster Management:**
+- `task kind:create-cluster` - Create a Kubernetes cluster using kind
+- `task kind:enable-loadbalancer` - Enable LoadBalancer services with KinD
+- `task kind:delete-cluster` - Delete the kind cluster
+
+**Kubernetes Resource Management:**
+- `task k8s:apply-all` - Apply all Kubernetes resources from k8s folder
+- `task k8s:delete-all` - Delete all Kubernetes resources
+- `task k8s:apply-namespace` - Create the safetrace namespace
+- `task k8s:apply-secrets` - Apply secrets configuration
+- `task k8s:apply-configmap` - Apply ConfigMap configuration
+- `task k8s:apply-databases` - Apply PostgreSQL and Kafka resources
+- `task k8s:apply-services` - Apply all service resources
+- `task k8s:apply-deployments` - Apply all deployment resources
+
+**Deployment Management:**
+- `task k8s:rollout-restart DEPLOYMENT=gateway` - Restart a specific deployment
+- `task k8s:rollout-status DEPLOYMENT=gateway` - Check rollout status
+
+**Port Forwarding:**
+- `task k8s:port-forward-gateway` - Port forward to gateway (localhost:8080)
+- `task k8s:port-forward-auth` - Port forward to auth service
+- `task k8s:port-forward-server` - Port forward to server service
+
+**Status and Debugging:**
+- `task k8s:get-pods` - List all pods in safetrace namespace
+- `task k8s:get-services` - List all services
+- `task k8s:get-deployments` - List all deployments
+- `task k8s:get-all` - Get all resources in the namespace
+- `task k8s:logs POD=gateway-xxx` - Stream logs from a pod
+- `task k8s:describe RESOURCE_TYPE=deployment RESOURCE_NAME=gateway` - Describe a resource
+
+### Kubernetes Deployment (Kind)
+
+The project uses [Kind](https://kind.sigs.k8s.io/) (Kubernetes in Docker) for local Kubernetes development. The cluster configuration is defined in `kind-config.yaml`.
+
+**Prerequisites:**
+- Devbox shell (see Devbox section above) or manually install: kind, kubectl, docker
+
+**Quick Start:**
+
+1. **Enter Devbox shell** (recommended):
+   ```bash
+   devbox shell
+   ```
+
+2. **Create Kind cluster:**
+   ```bash
+   task kind:create-cluster
+   ```
+
+3. **Enable LoadBalancer support:**
+   ```bash
+   task kind:enable-loadbalancer
+   ```
+   Note: This runs `cloud-provider-kind` which enables LoadBalancer services in KinD. Keep this process running or run it in the background.
+
+4. **Apply Kubernetes resources:**
+   ```bash
+   task k8s:apply-all
+   ```
+   This will create:
+   - Namespace (`safetrace`)
+   - Secrets and ConfigMaps
+   - PostgreSQL databases (auth and geo-fencer)
+   - Kafka (StatefulSet)
+   - All microservices (gateway, auth, server, geo-fencer, alert, logger)
+   - Services and networking
+
+5. **Verify deployment:**
+   ```bash
+   task k8s:get-all
+   task k8s:get-pods
+   ```
+   Wait for all pods to be in `Running` state. Check status with:
+   ```bash
+   kubectl get pods -n safetrace
+   ```
+
+6. **Access services:**
+   - Port forward the gateway:
+     ```bash
+     task k8s:port-forward-gateway
+     ```
+   - Or use Ingress (if configured):
+     ```bash
+     kubectl port-forward -n ingress-nginx service/ingress-nginx-controller 8080:80
+     ```
+
+**Cleaning Up:**
+```bash
+task k8s:delete-all    # Delete all resources
+task kind:delete-cluster  # Delete the cluster
+```
+
+**Troubleshooting:**
+- If pods are not starting, check logs: `task k8s:logs POD=<pod-name>`
+- Check resource status: `task k8s:describe RESOURCE_TYPE=pod RESOURCE_NAME=<pod-name>`
+- Verify secrets and configmaps are applied: `kubectl get secrets,configmaps -n safetrace`
+- Ensure LoadBalancer provider is running (see step 3 above)
+
 
 
 ## Learning Outcomes Captured

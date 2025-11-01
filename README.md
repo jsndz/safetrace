@@ -52,6 +52,88 @@ Most preferred way. Since the `docker-compose.yml` is perfectly composed.
 docker compose up -d
 ```
 
+## Development Environment Setup (Devbox)
+
+This project uses [Devbox](https://www.jetpack.io/devbox) to manage development dependencies and ensure a consistent environment across different machines.
+
+### Install Devbox
+
+```bash
+curl -fsSL https://get.jetpack.io/devbox | bash
+```
+
+### Enter Devbox Shell
+
+```bash
+devbox shell
+```
+
+This automatically installs and configures all required tools:
+- Go (latest)
+- Node.js 20
+- Kubernetes tools (kubectl, kind, k9s, helm, kustomize)
+- Task runner (go-task)
+- Other utilities (gh, jq, yq, envsubst)
+
+Once in the devbox shell, you can use `task` commands (see Taskfile section below) for Kubernetes operations.
+
+## Taskfile (Task Runner)
+
+The project uses [Task](https://taskfile.dev/) to automate common operations. Taskfile provides convenient shortcuts for Kubernetes management.
+
+### Installation
+
+Task is automatically installed when you enter the devbox shell. If not using devbox:
+
+```bash
+# macOS
+brew install go-task/tap/go-task
+
+# Linux
+sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
+
+# Or via npm
+npm install -g @task/cli
+```
+
+### Common Task Commands
+
+**Kind Cluster:**
+```bash
+task kind:create-cluster       # Create Kubernetes cluster
+task kind:enable-loadbalancer  # Enable LoadBalancer (keep running)
+task kind:delete-cluster       # Delete cluster
+```
+
+**Kubernetes Resources:**
+```bash
+task k8s:apply-all            # Apply all resources
+task k8s:delete-all           # Delete all resources
+task k8s:apply-namespace      # Create namespace
+task k8s:apply-secrets        # Apply secrets
+task k8s:apply-configmap      # Apply ConfigMap
+task k8s:apply-databases      # Apply PostgreSQL & Kafka
+task k8s:apply-services       # Apply services
+task k8s:apply-deployments    # Apply deployments
+```
+
+**Status & Debugging:**
+```bash
+task k8s:get-all              # Show all resources
+task k8s:get-pods             # List pods
+task k8s:get-services          # List services
+task k8s:logs POD=gateway-xxx # Stream pod logs
+```
+
+**Port Forwarding:**
+```bash
+task k8s:port-forward-gateway  # Forward gateway (8080)
+task k8s:port-forward-auth     # Forward auth service
+task k8s:port-forward-server   # Forward server service
+```
+
+See `taskfile.yaml` for all available commands.
+
 ## Running the Project(Local)
 
 Need to change the `docker-compose.yml` and `.env` files to suit running the code locally.
@@ -108,94 +190,168 @@ npm run dev
 
 ---
 
-## Kubernetes (Local)
+## Kubernetes Deployment (Kind)
 
-### 1. Start Minikube
+The project uses [Kind](https://kind.sigs.k8s.io/) (Kubernetes in Docker) for local Kubernetes development. Configuration is managed via Taskfile and Devbox.
+
+### Prerequisites
+
+- Docker installed and running
+- Devbox shell (recommended) or manually install: kind, kubectl
+
+### Quick Start
+
+1. **Enter Devbox shell** (recommended):
+   ```bash
+   devbox shell
+   ```
+
+2. **Create Kind cluster:**
+   ```bash
+   task kind:create-cluster
+   ```
+   This creates a 3-node cluster (1 control-plane, 2 workers) as configured in `kind-config.yaml`.
+
+3. **Enable LoadBalancer support:**
+   ```bash
+   task kind:enable-loadbalancer
+   ```
+   This runs `cloud-provider-kind` to enable LoadBalancer services in KinD.
+   
+   **Important:** Keep this process running (or run in background). This is required for LoadBalancer services.
+
+4. **Apply all Kubernetes resources:**
+   ```bash
+   task k8s:apply-all
+   ```
+   This creates:
+   - Namespace: `safetrace`
+   - Secrets and ConfigMaps
+   - PostgreSQL databases (for auth and geo-fencer services)
+   - Kafka (StatefulSet with persistent storage)
+   - All microservices (gateway, auth, server, geo-fencer, alert, logger)
+   - Services for internal communication
+
+5. **Verify deployment:**
+   ```bash
+   task k8s:get-all
+   # Or check specific resources:
+   task k8s:get-pods
+   task k8s:get-services
+   ```
+   
+   Wait for all pods to be in `Running` state:
+   ```bash
+   kubectl get pods -n safetrace -w
+   ```
+
+6. **Access the services:**
+
+   **Option A: Port Forward Gateway**
+   ```bash
+   task k8s:port-forward-gateway
+   ```
+   Then access at `http://localhost:8080`
+
+   **Option B: Use LoadBalancer (if LoadBalancer provider is running)**
+   ```bash
+   kubectl get svc -n safetrace
+   # Gateway service should have an external IP
+   ```
+
+### Using Taskfile for Common Operations
+
+**Deployment Management:**
+```bash
+# Restart a deployment
+task k8s:rollout-restart DEPLOYMENT=gateway
+
+# Check rollout status
+task k8s:rollout-status DEPLOYMENT=gateway
+```
+
+**View Logs:**
+```bash
+# Get pod name first
+task k8s:get-pods
+
+# Stream logs
+task k8s:logs POD=gateway-xxx-xxx
+```
+
+**Port Forwarding:**
+```bash
+task k8s:port-forward-gateway  # Gateway on :8080
+task k8s:port-forward-auth     # Auth on :8081
+task k8s:port-forward-server   # Server on :8082
+```
+
+### Cleaning Up
 
 ```bash
-minikube start
+# Delete all Kubernetes resources
+task k8s:delete-all
+
+# Delete the Kind cluster
+task kind:delete-cluster
 ```
 
-> This starts a local Kubernetes cluster with Docker or your configured VM driver.
+### Troubleshooting
 
----
-
-### 2. Enable Ingress Controller (if not already)
-
+**Pods not starting:**
 ```bash
-minikube addons enable ingress
+# Check pod status and events
+task k8s:describe RESOURCE_TYPE=pod RESOURCE_NAME=<pod-name>
+
+# View logs
+task k8s:logs POD=<pod-name>
+
+# Check all resources
+task k8s:get-all
 ```
 
-> Required to route traffic from `safetrace.local` to your services.
+**Services not accessible:**
+- Ensure LoadBalancer provider is running: `task kind:enable-loadbalancer`
+- Check service endpoints: `kubectl get endpoints -n safetrace`
+- Verify service selectors match pod labels
 
----
+**Database connection issues:**
+- Wait for PostgreSQL pods to be ready
+- Check database credentials in secrets: `kubectl get secrets -n safetrace`
+- Verify ConfigMaps: `kubectl get configmaps -n safetrace`
 
-### 3. Deploy your Kubernetes manifests
+**Kafka not working:**
+- Ensure Kafka StatefulSet is ready: `kubectl get statefulset -n safetrace`
+- Check Kafka service: `kubectl get svc kafka-service -n safetrace`
+- View Kafka pod logs: `task k8s:logs POD=kafka-0`
 
-```bash
-cd k8s
-bash ../scripts/k8s_deploy.sh
-```
+### Alternative: Minikube
 
-> This should create Deployments, Services, and an Ingress (assumed).
+If you prefer Minikube instead of Kind:
 
----
+1. **Start Minikube:**
+   ```bash
+   minikube start
+   ```
 
-### 4. Edit your `/etc/hosts`
+2. **Enable Ingress:**
+   ```bash
+   minikube addons enable ingress
+   ```
 
-```bash
-sudo nano /etc/hosts
-```
+3. **Deploy resources:**
+   ```bash
+   task k8s:apply-all
+   ```
 
-Add this line:
+4. **Start Minikube tunnel** (for LoadBalancer services):
+   ```bash
+   minikube tunnel
+   ```
 
-```
-127.0.0.1    safetrace.local
-```
-
-> Do **not** use `192.168.49.2` here unless you're not tunneling.
-
----
-
-### 5. Start the Minikube Tunnel
-
-```bash
-minikube tunnel
-```
-
-> This exposes `LoadBalancer` services on your localhost (needed for Ingress).
-
-> **Keep this terminal open** — closing it stops the tunnel.
-
----
-
-### 6. Verify the services and ingress
-
-Check that Ingress and your app are up:
-
-```bash
-kubectl get ingress
-kubectl get svc
-kubectl get pods
-```
-
-And test:
-
-```bash
-curl -v http://safetrace.local/
-```
-
-If you get a response (HTML or JSON), it's working
-
----
-
-### Troubleshooting Tips
-
-- If `curl` times out:
-
-  - Ensure `minikube tunnel` is running
-  - Check `kubectl describe ingress` for rules and backend service
-  - Ensure the service you’re routing to has matching `selector` and `targetPort`
+5. **Access via Ingress** (if configured):
+   - Edit `/etc/hosts`: `127.0.0.1 safetrace.local`
+   - Access: `http://safetrace.local`
 
 ---
 

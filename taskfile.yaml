@@ -106,7 +106,7 @@ tasks:
   k8s:port-forward-gateway:
     desc: "Port forward to the gateway service"
     cmds:
-      - kubectl port-forward -n safetrace service/gateway 8080:8080
+      - kubectl port-forward svc/gateway-service -n safetrace 8080:80
 
   k8s:port-forward-auth:
     desc: "Port forward to the auth service"

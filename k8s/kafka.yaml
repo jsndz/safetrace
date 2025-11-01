@@ -1,44 +1,48 @@
-apiVersion: apps/v1
-kind: StatefulSet
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
 metadata:
-  name: kafka
+  name: safetrace-cluster
+  namespace: safetrace
+spec:
+  kafka:
+    version: 4.1.0
+    config:
+      process.roles: broker,controller
+      node.id: 0
+      inter.broker.listener.name: internal
+      listener.security.protocol.map: internal:PLAINTEXT,external:PLAINTEXT
+      controller.quorum.voters: 0@safetrace-cluster-kafka-0.safetrace-cluster-kafka-brokers.safetrace.svc:9093
+      offsets.topic.replication.factor: 1
+      transaction.state.log.replication.factor: 1
+      transaction.state.log.min.isr: 1
+      group.initial.rebalance.delay.ms: 0
+      auto.create.topics.enable: true
+    listeners:
+      - name: internal
+        port: 9092
+        type: internal
+        tls: false
+      - name: external
+        port: 9094
+        type: nodeport
+        tls: false
+    storage:
+      type: ephemeral
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+  name: safetrace-pool
   namespace: safetrace
   labels:
-    app: kafka
+    strimzi.io/cluster: safetrace-cluster
 spec:
-  serviceName: kafka
-  replicas: 3
-  selector:
-    matchLabels:
-      app: kafka
-  template:
-    metadata:
-      labels:
-        app: kafka
-    spec:
-      securityContext:
-        fsGroup: 0
-      containers:
-        - name: kafka
-          image: doughgle/kafka-kraft
-          ports:
-            - containerPort: 9092 # broker port
-            - containerPort: 9093 # controller port
-          env:
-            # --- KRaft cluster configs ---
-            - name: KAFKA_ENABLE_KRAFT
-              value: "yes"
-            - name: KAFKA_CFG_PROCESS_ROLES
-              value: "broker,controller"
-            - name: KAFKA_CFG_NODE_ID
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: KAFKA_CFG_CONTROLLER_LISTENER_NAMES
-              value: "CONTROLLER"
-            - name: KAFKA_CFG_LISTENERS
-              value: "PLAINTEXT://:9092,CONTROLLER://:9093"
-            - name: KAFKA_CFG_ADVERTISED_LISTENERS
-              value: "PLAINTEXT://$(HOSTNAME).kafka.safetrace.svc.cluster.local:9092"
-            - name: KAFKA_CFG_CONTROLLER_QUORUM_VOTERS
-              value: "0@kafka-0.kafka.safetrace.svc.cluster.local:9093,1@kafka-1.kafka.safetrace.svc"
+  replicas: 1
+  roles:
+    - broker
+    - controller
+  storage:
+    type: ephemeral
