@@ -4,7 +4,7 @@ import { Eye, EyeOff, Satellite, Mail, Lock } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { GlassCard } from "../components/GlassCard";
 
-export const LoginPage: React.FC = () => {
+export const LoginPage1: React.FC = () => {
   const navigate = useNavigate();
   const { login, isLoading, error, clearError, isAuthenticated } = useAuth();
 
@@ -161,20 +161,40 @@ export const LoginPage: React.FC = () => {
             </p>
           </div>
         </GlassCard>
-
-        {/* Demo Info */}
-        <GlassCard padding="sm">
-          <div className="text-center space-y-2">
-            <h3 className="text-sm font-semibold text-slate-300">
-              Demo Account
-            </h3>
-            <p className="text-xs text-slate-400">
-              This is a demo with mock authentication. Any email/password
-              combination will work for existing accounts.
-            </p>
-          </div>
-        </GlassCard>
+        
       </div>
     </div>
   );
 };
+
+
+
+export const LoginPage: React.FC = () => {
+  return <div >
+    <header >
+      <div className="container mx-auto  text-4xl p-10"> 
+        <h1 >Safetrace</h1>
+      </div>
+    </header>
+    <main>
+      <div className="container mx-auto p-10 ">
+        <h1 className="text-4xl">Login</h1>
+        <form  className="p-10 ">
+          <label   htmlFor="email">Email Address</label>
+          <input id="email" name="email" type="email" placeholder="dadiy@nail.com"></input>
+          <br />
+          <label   htmlFor="password">Password</label>
+          <input id="password" name="password" type="password" placeholder="*********"></input>
+          <br />
+          <button  className="p-5" type="submit">Login</button>
+        </form>
+      </div>
+    </main>
+    <footer>
+    <div className="container mx-auto p-10 ">
+
+      <h4>By signing In you accept company policies.</h4>
+      </div>
+    </footer>
+  </div>
+}
