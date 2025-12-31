@@ -111,7 +111,7 @@ export const ExtensionConfigModal: React.FC<ExtensionConfigModalProps> = ({
           <select
             value={value}
             onChange={(e) => handleInputChange(field, e.target.value)}
-            className={`w-full px-3 py-2 bg-slate-700/50 border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-400/50 transition-colors ${
+            className={`w-full px-3 py-2 bg-black border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-400/50 transition-colors ${
               error ? "border-red-500/50" : "border-slate-600/50"
             }`}
           >
@@ -131,7 +131,7 @@ export const ExtensionConfigModal: React.FC<ExtensionConfigModalProps> = ({
               type="checkbox"
               checked={!!value}
               onChange={(e) => handleInputChange(field, e.target.checked)}
-              className="w-4 h-4 text-sky-500 bg-slate-700 border-slate-600 rounded focus:ring-sky-500 focus:ring-2"
+              className="w-4 h-4 text-sky-500 bg-black border-slate-600 rounded focus:ring-sky-500 focus:ring-2"
             />
             <span className="text-sm text-slate-300">{field.label}</span>
           </label>
@@ -147,7 +147,7 @@ export const ExtensionConfigModal: React.FC<ExtensionConfigModalProps> = ({
             min={field.min}
             max={field.max}
             step={field.step}
-            className={`w-full px-3 py-2 bg-slate-700/50 border rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/50 transition-colors ${
+            className={`w-full px-3 py-2 bg-black border rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/50 transition-colors ${
               error ? "border-red-500/50" : "border-slate-600/50"
             }`}
           />
@@ -160,7 +160,7 @@ export const ExtensionConfigModal: React.FC<ExtensionConfigModalProps> = ({
             value={value}
             onChange={(e) => handleInputChange(field, e.target.value)}
             placeholder={field.placeholder}
-            className={`w-full px-3 py-2 bg-slate-700/50 border rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/50 transition-colors ${
+            className={`w-full px-3 py-2 bg-black border rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/50 transition-colors ${
               error ? "border-red-500/50" : "border-slate-600/50"
             }`}
           />
@@ -169,7 +169,7 @@ export const ExtensionConfigModal: React.FC<ExtensionConfigModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <GlassCard>
           {/* Header */}
@@ -229,14 +229,14 @@ export const ExtensionConfigModal: React.FC<ExtensionConfigModalProps> = ({
           <div className="flex gap-3 mt-6">
             <button
               onClick={onClose}
-              className="flex-1 py-2 px-4 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-slate-700 transition-colors"
+              className="flex-1 py-2 px-4 bg-black text-slate-300 rounded-lg hover:bg-slate-700 transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
               disabled={isLoading}
-              className="flex-1 py-2 px-4 bg-sky-500 hover:bg-sky-600 disabled:bg-sky-500/50 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+              className="flex-1 py-2 px-4 bg-black hover:bg-sky-600 disabled:bg-black/50 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>

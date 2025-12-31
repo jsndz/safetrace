@@ -21,10 +21,12 @@ function App() {
         <Route
           path="/"
           element={
-            <ProtectedRoute>
+            // <ProtectedRoute>
+            <div>
               <Notification />
               <Layout />
-            </ProtectedRoute>
+              </div>
+            // </ProtectedRoute>
           }
         >
           <Route index element={<HomePage />} />

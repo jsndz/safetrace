@@ -20,7 +20,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   return (
     <div
       className={`
-        bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 
+        bg-black backdrop-blur-sm border border-slate-700/50 
         rounded-xl shadow-2xl shadow-slate-900/20 
         ${paddingClasses[padding]} ${className}
       `}

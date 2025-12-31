@@ -23,33 +23,21 @@ export const Navigation: React.FC = () => {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-slate-800/90 backdrop-blur-md border-t border-slate-700/50">
-      <div className="flex justify-around items-center py-2">
+    <nav >
+      <div className=" bg-black flex justify-between fixed bottom-0 left-0 right-0 p-4 border-t rounded-lg">
         {navItems.map(({ to, icon: Icon, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            className={({ isActive }) =>
-              `flex flex-col items-center p-3 rounded-xl transition-all duration-200 ${
-                isActive
-                  ? "text-sky-400 bg-sky-400/10"
-                  : "text-slate-400 hover:text-white hover:bg-slate-700/50"
-              }`
-            }
-          >
-            <Icon size={20} />
-            <span className="text-xs mt-1 font-medium">{label}</span>
+          <button title={`${label}`}>
+          <NavLink key={to} to={to}>
+            <Icon size={30} />
+            {/* <span>{label}</span> */}
           </NavLink>
+          </button>
         ))}
 
         {/* User Info & Logout */}
-        <button
-          onClick={handleLogout}
-          className="flex flex-col items-center p-3 rounded-xl transition-all duration-200 text-slate-400 hover:text-red-400 hover:bg-red-400/10"
-          title={`Logout ${user?.Name || "User"}`}
-        >
-          <LogOut size={20} />
-          <span className="text-xs mt-1 font-medium">Logout</span>
+        <button onClick={handleLogout} title={`Logout ${user?.Name || "User"}`}>
+          <LogOut size={30} />
+          {/* <span>Logout</span> */}
         </button>
       </div>
     </nav>

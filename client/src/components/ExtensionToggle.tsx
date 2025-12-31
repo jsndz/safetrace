@@ -29,7 +29,7 @@ export const ExtensionToggle: React.FC<ExtensionToggleProps> = ({
       {/* Extension Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-3 flex-1">
-          <div className="p-2 bg-sky-500/20 rounded-lg">
+          <div className="p-2 bg-black rounded-lg">
             <IconComponent className="text-sky-400" size={18} />
           </div>
           <div className="flex-1 min-w-0">
@@ -50,7 +50,7 @@ export const ExtensionToggle: React.FC<ExtensionToggleProps> = ({
             onChange={onToggle}
             className="sr-only peer"
           />
-          <div className="w-9 h-5 bg-slate-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sky-500"></div>
+          <div className="w-9 h-5 bg-black peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-black"></div>
         </label>
       </div>
 
@@ -58,7 +58,7 @@ export const ExtensionToggle: React.FC<ExtensionToggleProps> = ({
       {extension.requiresConfig && extension.enabled && (
         <button
           onClick={onConfigure}
-          className="w-full py-2 px-3 bg-slate-700/50 hover:bg-slate-700 text-slate-300 hover:text-white text-sm rounded-lg transition-colors border border-slate-600/50 hover:border-slate-500"
+          className="w-full py-2 px-3 bg-black hover:bg-slate-700 text-slate-300 hover:text-white text-sm rounded-lg transition-colors border border-slate-600/50 hover:border-slate-500"
         >
           <div className="flex items-center justify-center gap-2">
             <Settings size={14} />

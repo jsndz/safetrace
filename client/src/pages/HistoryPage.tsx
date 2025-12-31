@@ -109,14 +109,14 @@ export const HistoryPage: React.FC = () => {
           <div className="flex flex-wrap gap-2 mt-4">
             <button
               onClick={() => handleExport("json")}
-              className="flex items-center gap-2 px-4 py-2 bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded-lg hover:bg-sky-500/30 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-black text-sky-400 border border-sky-500/30 rounded-lg hover:bg-black/30 transition-colors"
             >
               <Download size={16} />
               Export JSON
             </button>
             <button
               onClick={() => handleExport("csv")}
-              className="flex items-center gap-2 px-4 py-2 bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded-lg hover:bg-sky-500/30 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-black text-sky-400 border border-sky-500/30 rounded-lg hover:bg-black/30 transition-colors"
             >
               <Download size={16} />
               Export CSV

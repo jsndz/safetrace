@@ -91,11 +91,11 @@ export const MapPage: React.FC = () => {
                 <span className="text-slate-300">Start Point</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-sky-400 rounded-full animate-pulse"></div>
+                <div className="w-3 h-3 bg-black rounded-full animate-pulse"></div>
                 <span className="text-slate-300">Current Location</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-0.5 bg-sky-400"></div>
+                <div className="w-6 h-0.5 bg-black"></div>
                 <span className="text-slate-300">Travel Path</span>
               </div>
             </div>

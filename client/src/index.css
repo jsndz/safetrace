@@ -28,7 +28,7 @@ input[type="range"].slider::-webkit-slider-thumb {
   height: 20px;
   width: 20px;
   border-radius: 50%;
-  background: #38bdf8;
+  background: #000000;
   cursor: pointer;
   border: 2px solid #0f172a;
   box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3);
@@ -38,7 +38,7 @@ input[type="range"].slider::-moz-range-thumb {
   height: 20px;
   width: 20px;
   border-radius: 50%;
-  background: #38bdf8;
+  background: #000000;
   cursor: pointer;
   border: 2px solid #0f172a;
   box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3);
@@ -55,12 +55,12 @@ input[type="range"].slider::-moz-range-thumb {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(56, 189, 248, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(56, 189, 248, 0.7);
+  background: rgba(0, 0, 0, 0.7);
 }
 
 /* Glass effect utilities */
@@ -73,7 +73,7 @@ input[type="range"].slider::-moz-range-thumb {
 button:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 2px solid #38bdf8;
+  outline: 2px solid #000000;
   outline-offset: 2px;
 }
 
