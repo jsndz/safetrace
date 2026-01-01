@@ -2,6 +2,7 @@ import React from "react";
 import { Settings, ChevronRight, ChevronLeft } from "lucide-react";
 import { Extension } from "../types/extensions";
 import { ExtensionToggle } from "./ExtensionToggle";
+import { GlassCard } from "./GlassCard";
 
 interface ExtensionSidebarProps {
   extensions: Extension[];
@@ -21,24 +22,33 @@ export const ExtensionSidebar: React.FC<ExtensionSidebarProps> = ({
   return (
     <>
       {/* Sidebar Toggle Button */}
-      <button className="fixed top-4 left-4 " onClick={onToggleSidebar}>
+      <button 
+        className={`fixed top-4 left-4 z-50 p-3  backdrop-blur-lg
+     
+    border border-slate-700/50 rounded-xl text-sky-400 
+    hover:bg-slate-700/50`}
+        onClick={onToggleSidebar}
+      >
         <Settings size={20} />
       </button>
 
       {/* Sidebar Overlay */}
+
       {isOpen && (
-        <div onClick={onToggleSidebar} />
+        <div
+          onClick={onToggleSidebar}
+          className="fixed inset-0 bg-black/40 z-40"
+        />
       )}
 
       {/* Sidebar  */}
       {isOpen && (
-        <aside className="bg-black fixed top-0 w-80 left-0 h-full  z-50" >
-          <div className=" flex flex-col items-center space-y-8 mt-auto">
+        <aside className="bg-black fixed top-0 w-80 left-0 h-full  border-r border-slate-700/50  transform transition-transform duration-300 z-50">
+          <div className=" flex flex-col   h-full items-stretch  ">
             {/* Header */}
-            <div className="flex justify-between items-center " >
+            <div className="flex justify-between p-2">
               <div className="">
-                <h2>Extensions</h2>
-                <p>Enhance your tracking experience</p>
+                <h1 className="font-bold ">Extensions</h1>
               </div>
               <button onClick={onToggleSidebar}>
                 <ChevronLeft size={20} />
@@ -46,21 +56,24 @@ export const ExtensionSidebar: React.FC<ExtensionSidebarProps> = ({
             </div>
 
             {/* Extensions List */}
-            <div>
+            <div className="flex-1 overflow-y-auto ">
+              {" "}
               {extensions.map((extension) => (
-                <div key={extension.id} className="flex flex-col justify-between space-y-11">
-                  <ExtensionToggle
-                    extension={extension}
-                    onToggle={() => onToggleExtension(extension.id)}
-                    onConfigure={() => onConfigureExtension(extension)}
-                  />
+                <div key={extension.id} className=" space-y-11">
+                  <GlassCard>
+                    <ExtensionToggle
+                      extension={extension}
+                      onToggle={() => onToggleExtension(extension.id)}
+                      onConfigure={() => onConfigureExtension(extension)}
+                    />
+                  </GlassCard>
                 </div>
               ))}
             </div>
 
             {/* Footer */}
-            <div className="fixed bottom-0 ">
-              <p>
+            <div className="mt-auto p-4 border-t border-white/10">
+              <p className="text-xs text-slate-500 text-center">
                 {extensions.filter((ext) => ext.enabled).length} of{" "}
                 {extensions.length} extensions enabled
               </p>

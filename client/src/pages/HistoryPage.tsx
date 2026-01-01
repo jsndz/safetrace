@@ -88,7 +88,7 @@ export const HistoryPage: React.FC = () => {
                 placeholder="Search by date, time, or coordinates..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/50 focus:border-sky-400/50"
+                className="w-full pl-10 pr-4 py-3 bg-black border border-slate-600/50 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/50 focus:border-sky-400/50"
               />
             </div>
 
@@ -98,7 +98,7 @@ export const HistoryPage: React.FC = () => {
               onChange={(e) =>
                 setSortOrder(e.target.value as "newest" | "oldest")
               }
-              className="px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-400/50 focus:border-sky-400/50"
+              className="px-4 py-3 bg-black border border-slate-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-400/50 focus:border-sky-400/50"
             >
               <option value="newest">Newest First</option>
               <option value="oldest">Oldest First</option>

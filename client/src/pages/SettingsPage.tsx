@@ -202,7 +202,7 @@ export const SettingsPage: React.FC = () => {
                 </button>
               </div>
 
-              <div className="p-3 bg-slate-700/30 rounded-lg border border-slate-600/30">
+              <div className="p-3 bg-black rounded-lg border border-slate-600/30">
                 <p className="text-xs text-slate-400">
                   All location data is stored locally on your device and never
                   sent to external servers. You have full control over your
@@ -216,7 +216,7 @@ export const SettingsPage: React.FC = () => {
         {/* Save Button */}
         <button
           onClick={saveSettings}
-          className="w-full py-4 px-6 bg-black hover:bg-sky-600 text-white font-semibold text-lg rounded-xl transition-all duration-200 shadow-lg shadow-sky-500/25 transform hover:scale-[1.02] active:scale-[0.98]"
+          className="w-full py-4 px-6 bg-sky-600 text-white font-semibold text-lg rounded-xl transition-all duration-200 shadow-lg shadow-sky-500/25 transform hover:scale-[1.02] active:scale-[0.98]"
         >
           Save Settings
         </button>

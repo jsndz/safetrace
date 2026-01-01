@@ -24,19 +24,19 @@ export const Navigation: React.FC = () => {
 
   return (
     <nav >
-      <div className=" bg-black flex justify-between fixed bottom-0 left-0 right-0 p-4 border-t rounded-lg">
+      <div className=" bg-black flex justify-between text-sky-400  fixed bottom-0 left-0 right-0 p-4 border-t rounded-lg">
         {navItems.map(({ to, icon: Icon, label }) => (
           <button title={`${label}`}>
           <NavLink key={to} to={to}>
-            <Icon size={30} />
+            <Icon size={20} />
             {/* <span>{label}</span> */}
           </NavLink>
           </button>
         ))}
 
         {/* User Info & Logout */}
-        <button onClick={handleLogout} title={`Logout ${user?.Name || "User"}`}>
-          <LogOut size={30} />
+        <button onClick={handleLogout}title={`Logout ${user?.Name || "User"}`}>
+          <LogOut size={20} />
           {/* <span>Logout</span> */}
         </button>
       </div>

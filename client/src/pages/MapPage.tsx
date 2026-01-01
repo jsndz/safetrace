@@ -30,7 +30,7 @@ export const MapPage: React.FC = () => {
 
         {/* Map Container */}
         <GlassCard className="h-96 md:h-[500px]">
-          <div className="h-full flex items-center justify-center bg-slate-800/30 rounded-lg border-2 border-dashed border-slate-600/50">
+          <div className="h-full flex items-center justify-center bg-black rounded-lg border-2 border-dashed border-slate-600/50">
             <div className="text-center space-y-4">
               <Navigation className="mx-auto text-slate-400" size={64} />
               <div>
