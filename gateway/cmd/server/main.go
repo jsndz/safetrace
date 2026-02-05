@@ -16,7 +16,6 @@ func main() {
 
 	var origin string
 	var authURL, locationURL, fencerURL, alertURL string
-	
 
 	origin = os.Getenv("ORIGIN")
 	authURL = os.Getenv("AUTH_URL")
@@ -24,6 +23,7 @@ func main() {
 	fencerURL = os.Getenv("FENCER_URL")
 	alertURL = os.Getenv("ALERT_URL")
 	log.Println(origin)
+	log.Println(authURL)
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     origin,
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization, Cache-Control",
@@ -55,7 +55,7 @@ func main() {
 		return proxy.Forward(c, fencerURL)
 	})
 	app.All("/api/v1/alert/*", func(c *fiber.Ctx) error {
-		log.Println("HIT ALERT ENNDPOINT")
+		log.Println("HIT ALERT ENDPOINT")
 		return proxy.ForwardSSE(c, alertURL)
 	})
 	app.Listen(":8080")

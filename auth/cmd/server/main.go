@@ -17,15 +17,14 @@ func getEnv(key, fallback string) string {
 	return val
 }
 
-
 func main() {
-	
+
 	app := fiber.New()
 
-	dbConn,err := db.InitDB()
+	dbConn, err := db.InitDB()
 
 	db.MigrateDB(dbConn)
-	if err!=nil {
+	if err != nil {
 		fmt.Println(err)
 	}
 	app.Get("/api/v1/auth", func(c *fiber.Ctx) error {
@@ -34,7 +33,7 @@ func main() {
 
 	authGroup := app.Group("/api/v1/auth")
 	route.SetUpRoute(authGroup, dbConn)
-	port := getEnv("AUTH_PORT","3001")
+	port := getEnv("AUTH_PORT", "3001")
 	fmt.Println("Connected:", dbConn)
 	fmt.Println("Server running on port:", port)
 	if err := app.Listen(":" + port); err != nil {
