@@ -13,11 +13,16 @@ export function useAlert(userId: string) {
 
     eventSource.addEventListener("message", (event) => {
       console.log("[SSE] Message received:", event.data);
-      setEventData((prev) => [...prev, event.data]);
+      setEventData((prev) => {
+        console.log(prev);
+        
+        if (prev.includes(event.data)) return prev;
+        return [...prev, event.data];
+      });
     });
 
     eventSource.addEventListener("open", () => {
-      console.log("[SSE] Connection opened ✅");
+      console.log("[SSE] Connection opened");
     });
 
     eventSource.addEventListener("error", (err) => {
@@ -26,7 +31,7 @@ export function useAlert(userId: string) {
     });
 
     return () => {
-      console.log("[SSE] Connection closed ❌");
+      console.log("[SSE] Connection closed ");
       eventSource.close();
     };
   }, [userId]);

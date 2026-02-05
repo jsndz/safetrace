@@ -20,3 +20,16 @@ export const sendLocation = async (data: LocationData) => {
     }
   );
 };
+
+
+export const getFenceData = async (userId: number) => {
+  try {
+    const res = await axios.get(`${API_BASE}/fence/${userId}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    console.error('Error getting fence data:', error);
+    throw error;
+  }
+};
