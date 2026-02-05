@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/jsndz/safetrace/geo-fencer/internal/app/model"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
@@ -14,7 +16,7 @@ func NewFenceRepository(db *gorm.DB) *FenceRepository {
 	return &FenceRepository{db: db}
 }
 
-func (r *FenceRepository) Create(fence *model.Fence) (*model.Fence,error) {
+func (r *FenceRepository) Create(fence *model.Fence) (*model.Fence, error) {
 	if err := r.db.Create(fence).Error; err != nil {
 		log.Error().Err(err).Msg("Failed to create fence")
 		return fence, err
@@ -25,10 +27,14 @@ func (r *FenceRepository) Create(fence *model.Fence) (*model.Fence,error) {
 func (r *FenceRepository) Read(userID uint) (*model.Fence, error) {
 	var fence model.Fence
 	err := r.db.Where("user_id = ?", userID).First(&fence).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
 	return &fence, err
 }
-
-
 
 func (r *FenceRepository) Update(userID uint, data model.Fence) (*model.Fence, error) {
 	if err := r.db.Model(&model.Fence{}).

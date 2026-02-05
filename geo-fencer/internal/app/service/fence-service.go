@@ -14,20 +14,20 @@ import (
 	"gorm.io/gorm"
 )
 
-
 type FenceService struct {
-	fenceRepo   *repository.FenceRepository
+	fenceRepo *repository.FenceRepository
 }
 type LocationData struct {
-	Id        string   `json:"id"`
-	Latitude  float64  `json:"latitude"`
-	Longitude float64  `json:"longitude"`
-	Accuracy  *float64 `json:"accuracy,omitempty"`
+	Id         string   `json:"id"`
+	Latitude   float64  `json:"latitude"`
+	Longitude  float64  `json:"longitude"`
+	Accuracy   *float64 `json:"accuracy,omitempty"`
 	Extensions []string `json:"extensions"`
-	Timestamp int64    `json:"timestamp"`
-	Address   *string  `json:"address,omitempty"`
-	UserId    uint     `json:"userId"`
+	Timestamp  int64    `json:"timestamp"`
+	Address    *string  `json:"address,omitempty"`
+	UserId     uint     `json:"userId"`
 }
+
 func Haversine(lat1, lon1, lat2, lon2 float64) float64 {
 	const R = 6371000
 
@@ -48,51 +48,54 @@ func Haversine(lat1, lon1, lat2, lon2 float64) float64 {
 			math.Sin(dLon/2)*math.Sin(dLon/2)
 
 	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
-
+	// returns distance between 2 points in meters
 	return R * c
 }
 
-func NewFenceService (db *gorm.DB) * FenceService {
+func NewFenceService(db *gorm.DB) *FenceService {
 	return &FenceService{
 		fenceRepo: repository.NewFenceRepository(db),
 	}
 }
 
-
-func (s *FenceService) CreateOrUpdateFence(userid uint,data model.Fence) (*model.Fence, error) {
-	fence ,err:= s.fenceRepo.Read(userid)
+func (s *FenceService) CreateOrUpdateFence(userid uint, data model.Fence) (*model.Fence, error) {
+	fence, err := s.fenceRepo.Read(userid)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		fence ,err= s.fenceRepo.Create(&data)
-		if err!=nil{
+		fence, err = s.fenceRepo.Create(&data)
+		if err != nil {
 			log.Fatal("Error in service 1")
 		}
-		return fence,err
-	} 
-	log.Printf("%v",data)
-	fence ,err= s.fenceRepo.Update(userid, data)
-	if err!=nil{
+		return fence, err
+	}
+	log.Printf("%v", data)
+	fence, err = s.fenceRepo.Update(userid, data)
+	if err != nil {
 		log.Fatal("Error in service2")
 	}
-	return fence,nil
+	return fence, nil
+}
+
+func (s *FenceService) GetFenceData(userId uint) (*model.Fence, error) {
+	return s.fenceRepo.Read(userId)
 }
 func ParseLocationData(data string) (LocationData, error) {
-    var location LocationData
-    err := json.Unmarshal([]byte(data), &location)
-    if err != nil {
-        return LocationData{}, errors.New("invalid location data format")
-    }
-    return location, nil
+	var location LocationData
+	err := json.Unmarshal([]byte(data), &location)
+	if err != nil {
+		return LocationData{}, errors.New("invalid location data format")
+	}
+	return location, nil
 }
-func Fencing(userId uint,stream string,db *gorm.DB,p *kafka.Producer) bool{
+func Fencing(userId uint, stream string, db *gorm.DB, p *kafka.Producer) bool {
 	var fence model.Fence
 	data, err := ParseLocationData(stream)
 	if err != nil {
-		log.Fatal("error ",err)
+		log.Fatal("error ", err)
 	}
 	err = db.Where("user_id = ?", userId).Find(&fence).Error
-	log.Printf("%v",fence)
+	log.Printf("%v", fence)
 	if err != nil {
-		log.Fatal("error ",err)
+		log.Fatal("error ", err)
 	}
 	distance := Haversine(data.Latitude, data.Longitude, fence.Latitude, fence.Longitude)
 	isInside := distance <= fence.Radius
@@ -102,19 +105,19 @@ func Fencing(userId uint,stream string,db *gorm.DB,p *kafka.Producer) bool{
 	case "enter":
 		if isInside {
 			log.Println("Alert: Entered geofence")
-			p.Publish(context.Background(),"alert",fmt.Appendf(nil, "%d", userId),[]byte("Alert: Entered geofence"))
+			p.Publish(context.Background(), "alert", fmt.Appendf(nil, "%d", userId), []byte("Alert: Entered geofence"))
 			return true
 		}
 	case "exit":
 		if !isInside {
 			log.Println(" Alert: Exited geofence")
-			p.Publish(context.Background(),"alert",fmt.Appendf(nil, "%d", userId),[]byte("Alert: Exited geofence"))
+			p.Publish(context.Background(), "alert", fmt.Appendf(nil, "%d", userId), []byte("Alert: Exited geofence"))
 			return true
 		}
 	case "both":
 		message := fmt.Sprintf("Alert: User is currently %s the geofence", map[bool]string{true: "inside", false: "outside"}[isInside])
 		log.Println(message)
-		p.Publish(context.Background(), "alert", fmt.Appendf(nil,"%d", userId), []byte(message))
+		p.Publish(context.Background(), "alert", fmt.Appendf(nil, "%d", userId), []byte(message))
 		return true
 	default:
 		log.Printf("Unknown AlertType: %s", fence.AlertType)

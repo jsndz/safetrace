@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"bytes"
-	"io"
 	"net/http"
 	"strconv"
 
@@ -23,11 +21,8 @@ func NewFenceHandler(db *gorm.DB) *FenceHandler {
 	}
 }
 
-
-func (h *FenceHandler) CreateOrUpdateFence(c *gin.Context) {
-
+func (h *FenceHandler) GetFenceData(c *gin.Context) {
 	idParam := c.Param("id")
-
 	if idParam == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"data":    nil,
@@ -37,19 +32,60 @@ func (h *FenceHandler) CreateOrUpdateFence(c *gin.Context) {
 		})
 		return
 	}
-	bodyBytes, err := c.GetRawData()
+
+	userID, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err": "unable to read request body"})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"data":    nil,
+			"message": "Invalid User ID",
+			"success": false,
+			"err":     err.Error(),
+		})
 		return
 	}
-	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes)) 
-	
+	resp, err := h.fenceService.GetFenceData(uint(userID))
+	if resp == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"data":    nil,
+			"message": "No fence configured for this user",
+			"success": true,
+		})
+	}
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"data":    nil,
+			"message": "Couldn't create or update fence",
+			"success": false,
+			"err":     err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":    resp,
+		"message": "Got Fence Data Successfully",
+		"success": true,
+	})
+}
+
+func (h *FenceHandler) CreateOrUpdateFence(c *gin.Context) {
+	idParam := c.Param("id")
+	if idParam == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"data":    nil,
+			"message": "Fence ID is required",
+			"success": false,
+			"err":     "missing fence ID",
+		})
+		return
+	}
+
 	var req utils.FenceRequest
-	if err = c.ShouldBindJSON(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"err": "invalid JSON"})
 		return
 	}
-	
+
 	userID, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -76,7 +112,7 @@ func (h *FenceHandler) CreateOrUpdateFence(c *gin.Context) {
 		Longitude: req.Longitude,
 		Radius:    req.Radius,
 		AlertType: req.AlertType,
-		UserID: uint(userID),
+		UserID:    uint(userID),
 	}
 
 	res, err := h.fenceService.CreateOrUpdateFence(uint(userID), fence)
@@ -89,7 +125,6 @@ func (h *FenceHandler) CreateOrUpdateFence(c *gin.Context) {
 		})
 		return
 	}
-
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":    res,
