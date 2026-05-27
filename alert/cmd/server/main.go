@@ -16,12 +16,14 @@ var (
 	userChannels = make(map[uint]chan string)
 	mu           = sync.RWMutex{}
 )
+
 func Ping(c *gin.Context) {
-  c.JSON(http.StatusOK, gin.H{"message": "pong"})
+	c.JSON(http.StatusOK, gin.H{"message": "pong"})
 }
 
 func main() {
 	r := gin.Default()
+
 	consumer := kafka.NewConsumerFromEnv("alert", "geo_fencer")
 
 	go startKafkaConsumer(consumer)
@@ -54,14 +56,14 @@ func startKafkaConsumer(consumer *kafka.Consumer) {
 		mu.RUnlock()
 		if ok {
 			select {
-				case ch <- string(msg.Value):
+			case ch <- string(msg.Value):
 				log.Println(string(msg.Value))
-				//non blocking 
-				//if the condition is not possible the default is executed
-				//hence non blocking behaviour
-				default:
-					log.Printf("[SSE] Dropping message for user %d (no listener)", key)
-				}
+			//non blocking
+			//if the condition is not possible the default is executed
+			//hence non blocking behaviour
+			default:
+				log.Printf("[SSE] Dropping message for user %d (no listener)", key)
+			}
 		}
 	}
 }
@@ -90,7 +92,6 @@ func handleAlertStream(ctx *gin.Context) {
 	}
 
 	notify := ctx.Done()
-
 
 	defer func() {
 		mu.Lock()

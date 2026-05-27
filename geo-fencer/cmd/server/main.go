@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/jsndz/safetrace/geo-fencer/internal/app/service"
 	"github.com/jsndz/safetrace/geo-fencer/pkg/db"
 	"github.com/jsndz/safetrace/geo-fencer/pkg/kafka"
@@ -15,7 +16,10 @@ import (
 
 func main() {
 	log.Println("[DB] Connecting to database...")
-
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	database, err := db.InitDB()
 	db.MigrateDB(database)
 	if err != nil {
@@ -25,13 +29,12 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Recovery())
 
-
 	router.GET("/health", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusAccepted, gin.H{"message": "ok"})
 	})
 
 	producer := kafka.NewProducerFromEnv()
-	consumer := kafka.NewConsumerFromEnv( "location", "geo_fencer")
+	consumer := kafka.NewConsumerFromEnv("location", "geo_fencer")
 	defer func() {
 		log.Println("[Kafka] Closing consumer...")
 		consumer.Close()
@@ -49,7 +52,7 @@ func main() {
 				log.Printf("[Kafka] Error parsing key: %v", err)
 				continue
 			}
-			service.Fencing(uint(key), string(msg.Value), database,producer)
+			service.Fencing(uint(key), string(msg.Value), database, producer)
 		}
 	}()
 

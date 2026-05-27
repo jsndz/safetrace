@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 	"github.com/jsndz/readit/auth/pkg/db"
 	"github.com/jsndz/readit/auth/route"
 )
@@ -18,7 +20,10 @@ func getEnv(key, fallback string) string {
 }
 
 func main() {
-
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	app := fiber.New()
 
 	dbConn, err := db.InitDB()

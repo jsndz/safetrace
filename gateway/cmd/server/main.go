@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/joho/godotenv"
 	"github.com/jsndz/readit/api-gateway/middleware"
 	"github.com/jsndz/readit/api-gateway/proxy"
 )
@@ -16,7 +17,10 @@ func main() {
 
 	var origin string
 	var authURL, locationURL, fencerURL, alertURL string
-
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	origin = os.Getenv("ORIGIN")
 	authURL = os.Getenv("AUTH_URL")
 	locationURL = os.Getenv("SERVER_URL")

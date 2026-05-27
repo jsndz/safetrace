@@ -5,18 +5,24 @@ import (
 	"log"
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/segmentio/kafka-go"
 )
 
 func main() {
-	log.Println(" Kafka consumer started")
+	log.Println("Location Logger Started")
+	log.Println("Kafka consumer started")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	BROKER := os.Getenv("KAFKA_BROKER")
 	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:   []string{BROKER},
-		Topic:     "location",
-		GroupID:   "logger-consumer",
-		MinBytes:  1,
-		MaxBytes:  10e6,
+		Brokers:  []string{BROKER},
+		Topic:    "location",
+		GroupID:  "logger-consumer",
+		MinBytes: 1,
+		MaxBytes: 10e6,
 	})
 	file, err := os.OpenFile("locations.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
